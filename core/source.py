@@ -141,7 +141,7 @@ class Downloader:
         '''
         print("正在同步{}全部资源...".format(course_info["name"]))
         for source_info in self._d_source_info[course_info["name"]]:
-            self._download_one(course_info['name'],source_info)
+            self._download_one(course_info,source_info)
 
     def _download_all(self):
         for course_info in self._l_course_info:
