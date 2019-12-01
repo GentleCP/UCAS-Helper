@@ -81,7 +81,7 @@
     pip install -r requirements.txt
     ```
 
-- 运行main.py  
+- 运行manage.py  
     ```text
     python manage.py
     ```
