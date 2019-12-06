@@ -51,8 +51,11 @@ class Init:
     def _cmd(self):
         while True:
             time.sleep(0.1)
-            option = int(input("输入你的操作："))
-            if option == 1:
+            option = input("输入你的操作：")
+            if not (option.isdigit() and 1<=int(option)<=4) :
+                self._logger.warning("非法操作，请重新输入")
+
+            elif option == 1:
                 try:
                     self._downloader.run()
                 except BackToMain:
@@ -73,8 +76,7 @@ class Init:
             elif option == 4:
                 print("欢迎使用，下次再会~")
                 exit(1)
-            else:
-                self._logger.warning("非法操作，请重新输入")
+
 
     def run(self):
         self._show_welcome()

