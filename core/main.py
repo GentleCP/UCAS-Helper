@@ -54,28 +54,29 @@ class Init:
             option = input("输入你的操作：")
             if not (option.isdigit() and 1<=int(option)<=4) :
                 self._logger.warning("非法操作，请重新输入")
+            else:
+                option = int(option)
+                if option == 1:
+                    try:
+                        self._downloader.run()
+                    except BackToMain:
+                        pass
 
-            elif option == 1:
-                try:
-                    self._downloader.run()
-                except BackToMain:
-                    pass
+                elif option == 2:
+                    try:
+                        self._wifi_loginer.login()
+                    except WifiError:
+                        pass
 
-            elif option == 2:
-                try:
-                    self._wifi_loginer.login()
-                except WifiError:
-                    pass
+                elif option == 3:
+                    try:
+                        self._wifi_loginer.logout()
+                    except WifiError:
+                        pass
 
-            elif option == 3:
-                try:
-                    self._wifi_loginer.logout()
-                except WifiError:
-                    pass
-
-            elif option == 4:
-                print("欢迎使用，下次再会~")
-                exit(1)
+                elif option == 4:
+                    print("欢迎使用，下次再会~")
+                    exit(1)
 
 
     def run(self):

