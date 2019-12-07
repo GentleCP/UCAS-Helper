@@ -8,7 +8,7 @@
 import logging
 import time
 
-from core.source import Downloader,BackToMain
+from core.source import Downloader,BackToMain,GradeObserver
 from core.wifi import WifiLoginer,WifiError
 import settings
 
@@ -24,7 +24,8 @@ WELCOME_MESSAGE = """
 **                            1:course sources download                        **
 **                            2:wifi login                                     **
 **                            3:wifi logout                                    **
-**                            4:exit                                           **
+**                            4:view grades                                    **
+**                            5:exit                                           **
 *********************************************************************************
 """
 
@@ -38,12 +39,14 @@ class Init:
                  welcome_msg,
                  wifi_loginer=None,
                  downloader=None,
+                 observer=None
                  ):
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s:[%(message)s]')
         self._logger = logging.getLogger("Init")
         self._welcome_msg = welcome_msg
         self._wifi_loginer = wifi_loginer
         self._downloader = downloader
+        self._observer = observer
 
     def _show_welcome(self):
         print(self._welcome_msg)
@@ -73,8 +76,9 @@ class Init:
                         self._wifi_loginer.logout()
                     except WifiError:
                         pass
-
                 elif option == 4:
+                    self._observer.run()
+                elif option == 5:
                     print("欢迎使用，下次再会~")
                     exit(1)
 
@@ -89,7 +93,8 @@ def main():
     downloader = Downloader(user_info=settings.USER_INFO,
                             urls=settings.URLS,
                             source_dir=settings.SOURCE_DIR)
-    init = Init(WELCOME_MESSAGE, wifi_loginer, downloader)
+    observer = GradeObserver(user_info=settings.USER_INFO,urls=settings.URLS)
+    init = Init(WELCOME_MESSAGE, wifi_loginer, downloader,observer)
     init.run()
 
 
