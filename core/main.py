@@ -55,7 +55,7 @@ class Init:
         while True:
             time.sleep(0.1)
             option = input("输入你的操作：")
-            if not (option.isdigit() and 1<=int(option)<=4) :
+            if not (option.isdigit() and 1<=int(option)<=5) :
                 self._logger.warning("非法操作，请重新输入")
             else:
                 option = int(option)
