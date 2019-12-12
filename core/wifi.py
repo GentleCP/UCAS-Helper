@@ -134,7 +134,7 @@ class WifiLoginer:
                 else:
                     if not self.d_accounts["useful_accounts"]:
                         # 所有账户流量都用完了
-                        self._logger.info("没有可用账户!,请执行python manage.py hack获取可用账号")
+                        self._logger.info("没有可用账户!,请执行python ucashelper.py hack获取可用账号")
                         exit(401)
 
         except FileNotFoundError:

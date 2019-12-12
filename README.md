@@ -112,13 +112,13 @@
     pip install -r requirements.txt
     ```
 
-- 运行manage.py  
+- 运行ucashelper.py  
     ```text
-    python manage.py
+    python ucashelper.py
     ```
 - 爆破账号  
     ```text
-    python manage.py hack
+    python ucashelper.py hack
     ```
 
 > 可以的话给个star呀~
