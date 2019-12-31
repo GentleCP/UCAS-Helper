@@ -8,7 +8,7 @@
 import logging
 import time
 
-from core.source import Downloader,BackToMain,GradeObserver
+from core.source import Downloader,BackToMain,Assesser
 from core.wifi import WifiLoginer,WifiError
 import settings
 
@@ -24,8 +24,8 @@ WELCOME_MESSAGE = """
 **                            1:course sources download                        **
 **                            2:wifi login                                     **
 **                            3:wifi logout                                    **
-**                            4:view grades                                    **
-**                            5:exit                                           **
+**                            4:course assess                                  **
+**                            q:exit                                           **
 *********************************************************************************
 """
 
@@ -39,14 +39,14 @@ class Init:
                  welcome_msg,
                  wifi_loginer=None,
                  downloader=None,
-                 observer=None
+                 assesser= None,
                  ):
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s:[%(message)s]')
         self._logger = logging.getLogger("Init")
         self._welcome_msg = welcome_msg
         self._wifi_loginer = wifi_loginer
         self._downloader = downloader
-        self._observer = observer
+        self._assesser = assesser
 
     def _show_welcome(self):
         print(self._welcome_msg)
@@ -55,7 +55,11 @@ class Init:
         while True:
             time.sleep(0.1)
             option = input("输入你的操作：")
-            if not (option.isdigit() and 1<=int(option)<=4) :
+            if option == 'q':
+                print("欢迎使用，下次再会~")
+                exit(1)
+
+            elif not (option.isdigit() and 1<=int(option)<=5) :
                 self._logger.warning("非法操作，请重新输入")
             else:
                 option = int(option)
@@ -76,11 +80,9 @@ class Init:
                         self._wifi_loginer.logout()
                     except WifiError:
                         pass
+
                 elif option == 4:
-                    self._observer.run()
-                elif option == 5:
-                    print("欢迎使用，下次再会~")
-                    exit(1)
+                    self._assesser.run()
 
 
     def run(self):
@@ -93,8 +95,8 @@ def main():
     downloader = Downloader(user_info=settings.USER_INFO,
                             urls=settings.URLS,
                             source_dir=settings.SOURCE_DIR)
-    observer = GradeObserver(user_info=settings.USER_INFO,urls=settings.URLS)
-    init = Init(WELCOME_MESSAGE, wifi_loginer, downloader,observer)
+    assesser = Assesser(settings.USER_INFO, settings.URLS)
+    init = Init(WELCOME_MESSAGE, wifi_loginer, downloader,assesser)
     init.run()
 
 

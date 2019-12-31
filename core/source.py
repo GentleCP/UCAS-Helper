@@ -14,11 +14,13 @@ import requests
 from bs4 import BeautifulSoup
 from prettytable import PrettyTable
 
-
 sys.setrecursionlimit(100000)
+
 
 class BackToMain(Exception):
     pass
+
+
 class Loginer:
     def __init__(self, user_info, urls):
         self._logger = logging.getLogger("Loginer")
@@ -229,112 +231,124 @@ class Downloader(Loginer):
         self._cmd()  # 进入交互界面
 
 
-import settings
-
-
-class GradeObserver(Loginer):
+class Assesser(Loginer):
 
     def __init__(self, user_info, urls):
         super().__init__(user_info, urls)
-        self._logger = logging.getLogger("GradeObserver")
-
-
-    def _check_apply(self):
-        res = self._S.get(self._urls['gm_scholar_url'])
-        bs4obj = BeautifulSoup(res.text,'html.parser')
-        if bs4obj.find('button',{'value':'123'}).string.strip()=='提交导师审核':
-            return True
-        return False
-
-    def _getinto_scholarship(self):
-        res = self._S.get(url=self._urls['scholarship_url'])
-        scholar_url = re.search(r"window.location.href='(?P<scholar_url>.*?)'", res.text).groupdict().get("scholar_url")
-        self._S.get(scholar_url)
-
-    def _post_scholarship_form(self):
-        res = self._S.get(self._urls['zlyh_url'])
-        bs4obj = BeautifulSoup(res.text, 'html.parser')
-        person_id = bs4obj.find('input', {'id': 'Personid'}).get("value")
-        data = {
-            'person_id': person_id,
-            'year_no': bs4obj.find('input', {'id': 'year_no'}).get("value"),
-            'AwardId': '123',
-            'Account': bs4obj.find('input', {'id': 'Account'}).get("value"),
-            'Email': bs4obj.find('input', {'id': 'Email'}).get("value"),
-            'Mobile': bs4obj.find('input', {'id': 'Mobile'}).get("value"),
-            'start_end_time1': '',
-            'study_work_unit1': '',
-            'what_degree1': '',
-            'start_end_time2': '',
-            'study_work_unit2': '',
-            'what_degree2': '',
-            'start_end_time3': '',
-            'study_work_unit3': '',
-            'what_degree3': '',
-            'start_end_time4': '',
-            'study_work_unit4': '',
-            'what_degree4': '',
-            'gnkw': '',
-            'gjkw': '',
-            'gnxshy': '',
-            'gjxshy': '',
-            'hxqk': '',
-            'sciei': '',
-            'gnkw_dyzz': '',
-            'gjkw_dyzz': '',
-            'gnxshy_dyzz': '',
-            'gjxshy_dyzz': '',
-            'hxqk_dyzz': '',
-            'sciei_dyzz': '',
-            'lwmc_add': '',
-            'lwsmsx_add': '',
-            'fbsj_add': '',
-            'kwmc_add': '',
-            'zzmc_add': '',
-            'zzsmsx_add': '',
-            'cbsj_add': '',
-            'cbsmc_add': '',
-            'zlh_add': '',
-            'zlmc_add': '',
-            'hjsj_add': '',
-            'qbfmrpx_add': '',
-            'zlqr_add': '',
-            'how_a_degree': '1',
-            'title': '1',
-            'category': '基础研究',
-            'actual_performance': '1',
-            'filevideo': '(binary)',
-            'Personid': person_id,
-            'StatusCode': '0',
-            'Createtime': bs4obj.find('input', {'id': 'Createtime'}).get("value"),
-            'xkq_id': '0',
-            'display_order': '0'
+        self._logger = logging.getLogger("Assesser")
+        self.headers =  {
+            'Connection': 'keep-alive',
+            'Accept': '*/*',
+            'Origin': 'http://jwxk.ucas.ac.cn',
+            'X-Requested-With': 'XMLHttpRequest',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Referer': 'http://jwxk.ucas.ac.cn/evaluate/evaluateCourse/165683',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'zh-CN,zh;q=0.9',
         }
-        self._S.post(self._urls['edit_zlyu_url'], data=data)
+        self._id_pattern = re.compile('/evaluate/.*?/(?P<id>.*?)$')
 
-    def _show_grades(self):
-        res = self._S.get(self._urls['zlyh_url'])
-        bs4obj = BeautifulSoup(res.text, 'html.parser')
-        grades_url = 'http://scholarship.ucas.ac.cn' + bs4obj.find('a', {'target': '_blank'}).get("href")
-        res = self._S.get(grades_url)
-        bs4obj = BeautifulSoup(res.text, 'html.parser')
-        grades_info = bs4obj.find_all('table')[6].find_all('td')
-        step = 6
-        new_grades_info = [grades_info[i:i + step] for i in range(0, len(grades_info), step)][0:-1]
-        new_grades_info = [[i.string for i in x] for x in new_grades_info]
-        tb = PrettyTable()
-        fields = ["学年学期", "课程名称", "学位课", "学时","学分","成绩"]
-        tb.field_names = fields # 设置表头名称
-        for info in new_grades_info:
-            tb.add_row(info)
-        self._logger.info("获取成绩成功，如下：")
-        print(tb)
+    def _get_course_ids(self):
+        res = self._S.get(url=self._urls['course_select_url'])
+        course_select_url = re.search(r"window.location.href='(?P<course_select_url>.*?)'", res.text).groupdict().get(
+            "course_select_url")
+        self._S.get(course_select_url)
 
+        res = self._S.get(self._urls['course_assess_url'])
+        bs4obj = BeautifulSoup(res.text, 'html.parser')
+        urls = [url.get('href') for url in bs4obj.find_all('a', {'class': 'btn'})]
+        course_ids = []
+        for url in urls:
+            course_ids.append(self._id_pattern.search(url).groupdict()['id'])
+        return course_ids
+
+    def __assess_course(self,course_id):
+        res = self._S.get('http://jwxk.ucas.ac.cn/evaluate/evaluateCourse/' + course_id )
+        s = res.text.split('?s=')[-1].split('"')[0]
+        soup = BeautifulSoup(res.text, 'html.parser')
+        radios = soup.find_all('input', attrs={'type': 'radio'})
+        value = radios[0]['value']
+        data = {}
+        for radio in radios:
+            data[radio['name']] = value
+        data['item_14']= '这门课讲的真是太好了，我简直没有其他言语可以形容它！！！！'  # 这门课我最喜欢什么
+        data['item_15']= '我认为这门课做的很好了，课程内容一级棒！！！！！！'   # 我认为本课程应从哪些方面需要进一步改进和提高？
+        data['item_16']= '我平均每周都认认真真准备这门课的内容，每天超过3小时！！！'  # 我平均每周在这门课程上花费多少小时？
+        data['item_17']='我对这个学科领域兴趣甚厚，有如滔滔江水，连绵不绝！！！！'  # 在参与这门课之前，我对这个学科领域兴趣如何
+        data['item_18']= '我每周都认认真真上课，生怕错过任何一堂课，在课堂上积极发言，踊跃举手，是全班的表率！！！！'  # 我对该课程的课堂参与度（包括出勤、回答问题等）
+        data['item_25']=''
+        data['radio_19']=''
+        data['subjectiveRadio']= '20'   # 教室大小合适
+        data['subjectiveCheckbox']= '27'  # 自己需求和兴趣
+
+        res = self._S.post('http://jwxk.ucas.ac.cn/evaluate/saveCourseEval/'+course_id+'?s='+s, data=data,headers=self.headers)
+
+        tmp = BeautifulSoup(res.text, 'html.parser')
+        try:
+            flag = tmp.find('label', attrs={'id': 'loginSuccess'})
+            if flag.string == '保存成功':
+                print('{}评估结果：[success]'.format(course_id))
+            else:
+                print('{}评估结果：[fail]，请手动重新评估该课'.format(course_id))
+
+        except AttributeError:
+            print('{}评估结果：[fail]，尝试重新评估'.format(course_id))
+            self.__assess_course(course_id)
+
+    def _assess_courses(self, course_ids):
+        self._logger.info('开始评估课程')
+        for course_id in course_ids:
+            self.__assess_course(course_id)
+        self._logger.info('课程评估完毕')
+
+
+    def _get_teacher_ids(self):
+        res = self._S.get(self._urls['teacher_assess_url'])
+        bs4obj = BeautifulSoup(res.text, 'html.parser')
+        urls = [url.get('href') for url in bs4obj.find_all('a', {'class': 'btn'})]
+        teacher_ids = []
+        for url in urls:
+            teacher_ids.append(self._id_pattern.search(url).groupdict()['id'])
+        return teacher_ids
+
+    def __assess_teacher(self, teacher_id):
+        res = self._S.get('http://jwxk.ucas.ac.cn/evaluate/evaluateTeacher/' + teacher_id)
+        bs4obj = BeautifulSoup(res.text,'html.parser')
+        submit_url = 'http://jwxk.ucas.ac.cn' + bs4obj.find('form',{'id':'regfrm'}).get('action')
+        radios = bs4obj.find_all('input', attrs={'type': 'radio'})
+        value = radios[0]['value']  # 默认全5星好评
+        data = {}
+        for radio in radios:
+            data[radio['name']] = value
+        data['item_43'] = '我觉得这个老师讲课十分有趣，课堂氛围十分活跃，是我喜欢的地方！'  # 这位老师的教学，你最喜欢什么？
+        data['item_44'] = '老师简直完美，我对老师的敬仰犹如滔滔江水，连绵不绝！！！！'  # 您对老师有哪些意见和建议？
+        data['subjectiveRadio'] = ''
+        data['subjectiveCheckbox'] = ''
+        res = self._S.post(submit_url,data=data,headers = self.headers)
+        tmp = BeautifulSoup(res.text, 'html.parser')
+        try:
+            flag = tmp.find('label', attrs={'id': 'loginSuccess'})
+            if flag.string == '保存成功':
+                print('{}评估结果：[success]'.format(teacher_id))
+                return
+            else:
+                print('{}评估结果：[fail]，请手动评估该教师'.format(teacher_id))
+
+        except AttributeError:
+            print('{}评估结果：[fail]，尝试重新评估'.format(teacher_id))
+            self.__assess_teacher(teacher_id)
+
+    def _assess_teachers(self, teacher_ids):
+        self._logger.info('开始评估教师')
+        for teacher_id in teacher_ids:
+            self.__assess_teacher(teacher_id)
+        self._logger.info('教师评估完毕')
 
     def run(self):
         self._login()
-        self._getinto_scholarship()
-        if not self._check_apply():
-            self._post_scholarship_form()
-        self._show_grades()
+        course_ids = self._get_course_ids()
+        self._assess_courses(course_ids)
+        teacher_ids = self._get_teacher_ids()
+        self._assess_teachers(teacher_ids)
 

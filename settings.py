@@ -25,5 +25,9 @@ URLS = {
     'scholarship_url' : 'http://sep.ucas.ac.cn/portal/site/282',
     'zlyh_url':'http://scholarship.ucas.ac.cn/gmjaward/GmjAlppyDetails_Xs?award_id=123',
     'gm_scholar_url':'http://scholarship.ucas.ac.cn/GmjAward/GmjList_Xs',
-    'edit_zlyh_url':'http://scholarship.ucas.ac.cn/GmjAward/GmjAlppyEdit_Xs/12686'
+    'edit_zlyh_url':'http://scholarship.ucas.ac.cn/GmjAward/GmjAlppyEdit_Xs/12686',
+    'course_select_url':'http://sep.ucas.ac.cn/portal/site/226/821',
+    'course_assess_url':'http://jwxk.ucas.ac.cn/evaluate/course/59585',
+    'teacher_assess_url':'http://jwxk.ucas.ac.cn/evaluate/teacher/59585'
 }
+
