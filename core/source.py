@@ -233,9 +233,10 @@ class Downloader(Loginer):
 
 class Assesser(Loginer):
 
-    def __init__(self, user_info, urls):
+    def __init__(self, user_info, urls,assess_msg):
         super().__init__(user_info, urls)
         self._logger = logging.getLogger("Assesser")
+        self._assess_msg = assess_msg
         self.headers =  {
             'Connection': 'keep-alive',
             'Accept': '*/*',
@@ -272,11 +273,11 @@ class Assesser(Loginer):
         data = {}
         for radio in radios:
             data[radio['name']] = value
-        data['item_14']= '这门课讲的真是太好了，我简直没有其他言语可以形容它！！！！'  # 这门课我最喜欢什么
-        data['item_15']= '我认为这门课做的很好了，课程内容一级棒！！！！！！'   # 我认为本课程应从哪些方面需要进一步改进和提高？
-        data['item_16']= '我平均每周都认认真真准备这门课的内容，每天超过3小时！！！'  # 我平均每周在这门课程上花费多少小时？
-        data['item_17']='我对这个学科领域兴趣甚厚，有如滔滔江水，连绵不绝！！！！'  # 在参与这门课之前，我对这个学科领域兴趣如何
-        data['item_18']= '我每周都认认真真上课，生怕错过任何一堂课，在课堂上积极发言，踊跃举手，是全班的表率！！！！'  # 我对该课程的课堂参与度（包括出勤、回答问题等）
+        data['item_14']= self._assess_msg['item_14']  # 这门课我最喜欢什么
+        data['item_15']= self._assess_msg['item_15']  # 我认为本课程应从哪些方面需要进一步改进和提高？
+        data['item_16']= self._assess_msg['item_16']  # 我平均每周在这门课程上花费多少小时？
+        data['item_17']= self._assess_msg['item_17']  # 在参与这门课之前，我对这个学科领域兴趣如何
+        data['item_18']= self._assess_msg['item_18']  # 我对该课程的课堂参与度（包括出勤、回答问题等）
         data['item_25']=''
         data['radio_19']=''
         data['subjectiveRadio']= '20'   # 教室大小合适
@@ -321,8 +322,8 @@ class Assesser(Loginer):
         data = {}
         for radio in radios:
             data[radio['name']] = value
-        data['item_43'] = '我觉得这个老师讲课十分有趣，课堂氛围十分活跃，是我喜欢的地方！'  # 这位老师的教学，你最喜欢什么？
-        data['item_44'] = '老师简直完美，我对老师的敬仰犹如滔滔江水，连绵不绝！！！！'  # 您对老师有哪些意见和建议？
+        data['item_43'] = self._assess_msg['item_43']  # 这位老师的教学，你最喜欢什么？
+        data['item_44'] = self._assess_msg['item_44'] # 您对老师有哪些意见和建议？
         data['subjectiveRadio'] = ''
         data['subjectiveCheckbox'] = ''
         res = self._S.post(submit_url,data=data,headers = self.headers)

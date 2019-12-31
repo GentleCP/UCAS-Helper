@@ -1,6 +1,6 @@
 # @Author  : GentleCP
 # @Email   : 574881148@qq.com
-# @File    : manage.py
+# @File    : ucashelper.py
 # @Item    : PyCharm
 # @Time    : 2019/11/28/028 13:58
 # @WebSite : https://www.gentlecp.com

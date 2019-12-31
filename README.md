@@ -28,6 +28,10 @@
 因为会用脚本评估的大多是怕麻烦的人，如果有个别老师或课程让你觉得十分不靠谱，
 根本无益，建议还是手动去修改下对应的评估，虽然不知道是否真的对教改有用，
 起码得让那课程老师心里有点数呀~
+> 评估之前请进入`settings.py`修改一下主管评估的内容，别都和我评估一样了喂~
+
+![](img/5-2.png)
+
 
 ### 关于分数查询
 这个功能我将其删去了，因为在评估过后直接登录校园网即可查看分数，所以感觉略显鸡肋，
@@ -105,13 +109,13 @@
     pip install -r requirements.txt
     ```
 
-- 运行manage.py  
+- 运行ucashelper.py  
     ```text
-    python manage.py
+    python ucashelper.py
     ```
 - 爆破账号  
     ```text
-    python manage.py hack
+    python ucashelper.py hack
     ```
 
 > 可以的话给个star呀~

@@ -95,7 +95,7 @@ def main():
     downloader = Downloader(user_info=settings.USER_INFO,
                             urls=settings.URLS,
                             source_dir=settings.SOURCE_DIR)
-    assesser = Assesser(settings.USER_INFO, settings.URLS)
+    assesser = Assesser(settings.USER_INFO, settings.URLS,settings.ASSESS_MSG)
     init = Init(WELCOME_MESSAGE, wifi_loginer, downloader,assesser)
     init.run()
 
