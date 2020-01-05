@@ -162,9 +162,12 @@ class WifiLoginer:
 
     def _change_account(self, msg):
         self._logger.info("正在为您尝试切换可用账户...")
-        if msg == '无可用剩余流量!' or "密码不匹配,请输入正确的密码!":
+        if msg == '无可用剩余流量!' or "密码不匹配,请输入正确的密码!" :
             useless_account = self.d_accounts["useful_accounts"].pop(0)
             self.d_accounts["useless_accounts"].append(useless_account)
+        elif msg == "设备未注册,请在ePortal上添加认证设备":
+            self._logger.error("设备未注册，请断开wifi后重连再试！")
+            exit(500)
         else:
             self.d_accounts["useful_accounts"].pop(0)
 
