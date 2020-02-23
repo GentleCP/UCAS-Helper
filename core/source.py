@@ -129,10 +129,20 @@ class Downloader(Loginer):
         给定一门课，下载该门课指定一个资源
         :return:
         '''
-        dir = self._source_dir + '/' + course_info["name"]
+        # 按季度划分课程
+        if "秋季" in course_info['name']:
+            base_dir = self._source_dir + '/秋季/'
+        elif "春季" in course_info['name']:
+            base_dir = self._source_dir + '/春季/'
+        else:
+            base_dir = self._source_dir+ '/夏季/'
+        if not os.path.exists(base_dir):
+            os.mkdir(base_dir)
+
+        dir = base_dir + course_info['name']  # 课程目录
         if not os.path.exists(dir):
             os.mkdir(dir)
-        file_path = self._source_dir + '/' + course_info["name"] + '/' + source_info['name']
+        file_path = base_dir + course_info["name"] + '/' + source_info['name']  # 文件存储路径
         if not os.path.isfile(file_path):
             # 只下载没有的文件，若存在不下载，节省流量
             self._logger.info("正在下载:{}".format(source_info['name']))
@@ -144,11 +154,11 @@ class Downloader(Loginer):
     def _download_course(self, course_info):
         '''
         下载一门课的所有资源
-        :param S: 
+        :param S:
         :param course_info:
-        :return: 
+        :return:
         '''
-        print("正在同步{}全部资源...".format(course_info["name"]))
+        print("\033[1;45m正在同步{}全部资源... \033[0m".format(course_info["name"]))
         for source_info in self._d_source_info[course_info["name"]]:
             self._download_one(course_info, source_info)
 
@@ -158,18 +168,17 @@ class Downloader(Loginer):
             self._download_course(course_info)
         if self._update_sources:
             self._logger.info("[同步完成] 本次更新资源列表如下：")
-
             for source in self._update_sources:
-                print(source)
+                print('\033[1;41m'+source+'\033[0m')
         else:
             self._logger.info("[同步完成] 本次无更新内容！")
 
     def _show(self, infos):
         if infos:
             for info in infos:
-                print("[{}]:{}".format(info['id'], info['name']))
+                print("\033[1;45m [{}]:{} \033[0m".format(info['id'], info['name']))
         else:
-            print("尚无信息！")
+            print("\033[1;41m尚无信息！\033[0m")
 
     def __check_option(self, option):
         if option == 'q':
@@ -179,7 +188,7 @@ class Downloader(Loginer):
             self._cur_course_info = None  # 清空
             return True
 
-        elif option == 'd':
+        elif option == 'd' and not self._cur_course_info:
             self._download_all()
             return False
 
@@ -211,14 +220,14 @@ class Downloader(Loginer):
 
     def _cmd(self):
         while True:
-            print(">本学期课程列表：", flush=True)
+            print("\033[1;45m>课程列表：\033[0m", flush=True)
             self._show(self._l_course_info)
             option = input("请输入你的操作（id:显示对应课程的所有资源;d:一键同步所有资源;q:回到主界面）：")
             if not self.__check_option(option):
                 # 不进入下一级界面
                 continue
             while True:
-                print(">本学期课程列表>{}:".format(self._cur_course_info["name"]))
+                print("\033[1;45m>课程列表>{}:\033[0m".format(self._cur_course_info["name"]))
                 self._show(self._d_source_info[self._cur_course_info["name"]])
                 option = input("请输入你的操作（id:下载对应id资源;a:下载所有;b:返回上一级;q:回到主界面）：")
                 if self.__check_option(option):
@@ -289,12 +298,12 @@ class Assesser(Loginer):
         try:
             flag = tmp.find('label', attrs={'id': 'loginSuccess'})
             if flag.string == '保存成功':
-                print('{}评估结果：[success]'.format(course_id))
+                print('\033[1;45m{}评估结果：[success] \033[0m'.format(course_id))
             else:
-                print('{}评估结果：[fail]，请手动重新评估该课'.format(course_id))
+                print('\033[1;45m{}评估结果：[fail]，请手动重新评估该课 \033[0m'.format(course_id))
 
         except AttributeError:
-            print('{}评估结果：[fail]，尝试重新评估'.format(course_id))
+            print('\033[1;45m{}评估结果：[fail]，尝试重新评估 \033[0m'.format(course_id))
             self.__assess_course(course_id)
 
     def _assess_courses(self, course_ids):
@@ -331,13 +340,13 @@ class Assesser(Loginer):
         try:
             flag = tmp.find('label', attrs={'id': 'loginSuccess'})
             if flag.string == '保存成功':
-                print('{}评估结果：[success]'.format(teacher_id))
+                print('\033[1;45m{}评估结果：[success] \033[0m'.format(teacher_id))
                 return
             else:
-                print('{}评估结果：[fail]，请手动评估该教师'.format(teacher_id))
+                print('\033[1;45m{}评估结果：[fail]，请手动评估该教师 \033[0m'.format(teacher_id))
 
         except AttributeError:
-            print('{}评估结果：[fail]，尝试重新评估'.format(teacher_id))
+            print('\033[1;45m{}评估结果：[fail]，尝试重新评估 \033[0m'.format(teacher_id))
             self.__assess_teacher(teacher_id)
 
     def _assess_teachers(self, teacher_ids):

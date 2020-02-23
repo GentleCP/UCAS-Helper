@@ -12,7 +12,7 @@ USER_INFO = {
     'password': '',
     'remember': 'checked'  # 此处不要动
 }
-SOURCE_DIR = 'D:/UCAS-courses'
+SOURCE_DIR = ''
 
 # ------------------后面的不要动--------------#
 
