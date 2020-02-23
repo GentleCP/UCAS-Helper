@@ -117,7 +117,7 @@ class Downloader(Loginer):
             i = 1
             for e in bs4obj.findAll('a'):
                 try:
-                    if 'http://course.ucas.ac.cn/access/content/group' in e["href"]:
+                    if 'https://course.ucas.ac.cn/access/content/group' in e["href"]:
                         filename = e.find('span', {'class': 'hidden-sm hidden-xs'}).get_text()
                         self._d_source_info[course_info["name"]].append({'id': i, 'name': filename, 'url': e["href"]})
                         i += 1
