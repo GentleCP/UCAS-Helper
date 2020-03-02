@@ -57,7 +57,7 @@ class Init:
             option = input("输入你的操作：")
             if option == 'q':
                 print("欢迎使用，下次再会~")
-                exit(1)
+                exit(200)
 
             elif not (option.isdigit() and 1<=int(option)<=5) :
                 self._logger.warning("非法操作，请重新输入")

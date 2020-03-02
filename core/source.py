@@ -173,6 +173,18 @@ class Downloader(Loginer):
         else:
             self._logger.info("[同步完成] 本次无更新内容！")
 
+    def _download_course_by_season(self,season):
+        for course_info in self._l_course_info:
+            if season in course_info['name']:
+                self._set_source_info(course_info)
+                self._download_course(course_info)
+        if self._update_sources:
+            self._logger.info("[同步完成] 本次更新资源列表如下：")
+            for source in self._update_sources:
+                print('\033[1;41m' + source + '\033[0m')
+        else:
+            self._logger.info("[同步完成] 本次无更新内容！")
+
     def _show(self, infos):
         if infos:
             for info in infos:
@@ -182,7 +194,8 @@ class Downloader(Loginer):
 
     def __check_option(self, option):
         if option == 'q':
-            raise BackToMain
+            print("欢迎使用，下次再会~")
+            exit(200)
 
         elif option == 'b' and self._cur_course_info:
             self._cur_course_info = None  # 清空
@@ -190,6 +203,18 @@ class Downloader(Loginer):
 
         elif option == 'd' and not self._cur_course_info:
             self._download_all()
+            return False
+
+        elif option == 's' and not self._cur_course_info:
+            self._download_course_by_season('春季')
+            return False
+
+        elif option == 'm' and not self._cur_course_info:
+            self._download_course_by_season('夏季')
+            return False
+
+        elif option == 'f' and not self._cur_course_info:
+            self._download_course_by_season('秋季')
             return False
 
         elif option == 'a' and self._cur_course_info:
@@ -222,14 +247,32 @@ class Downloader(Loginer):
         while True:
             print("\033[1;45m>课程列表：\033[0m", flush=True)
             self._show(self._l_course_info)
-            option = input("请输入你的操作（id:显示对应课程的所有资源;d:一键同步所有资源;q:回到主界面）：")
+            print("""
+***************************************
+*       id:显示对应课程的所有资源       *
+*       d:一键同步所有资源             *
+*       s:同步春季课程资源             *
+*       m:同步夏季课程资源             *
+*       f:同步秋季课程资源             *
+*       q:退出                        *
+***************************************
+            """)
+            option = input("请输入你的操作:")
             if not self.__check_option(option):
                 # 不进入下一级界面
                 continue
             while True:
                 print("\033[1;45m>课程列表>{}:\033[0m".format(self._cur_course_info["name"]))
                 self._show(self._d_source_info[self._cur_course_info["name"]])
-                option = input("请输入你的操作（id:下载对应id资源;a:下载所有;b:返回上一级;q:回到主界面）：")
+                print("""
+*********************************
+*       id:下载对应id资源         *
+*       a:下载所有               *
+*       b:返回上一级             *
+*       q:退出                  *
+********************************
+                """)
+                option = input("请输入你的操作：")
                 if self.__check_option(option):
                     # 接收到返回上级界面信息
                     break
