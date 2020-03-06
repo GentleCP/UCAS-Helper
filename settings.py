@@ -10,7 +10,7 @@
 USER_INFO = {
     'username': '',
     'password': '',
-    'remember': 'checked'  # 此处不要动
+    'remember': 'undefined'  # 此处不要动
 }
 SOURCE_DIR = ''
 

@@ -12,7 +12,6 @@ import re
 import requests
 
 from bs4 import BeautifulSoup
-from prettytable import PrettyTable
 
 sys.setrecursionlimit(100000)
 
@@ -41,7 +40,7 @@ class Loginer:
             'Accept-Language': 'zh-CN,zh;q=0.9',
         }
         try:
-            res = self._S.post(url=self._urls["login_url"], data=self._user_info, headers=headers, timeout=2)
+            res = self._S.post(url=self._urls["login_url"], data=self._user_info, headers=headers, timeout=5)
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ReadTimeout):
@@ -68,7 +67,8 @@ class Downloader(Loginer):
         self._d_source_info = {}
         self._S = requests.session()
         self._cur_course_info = None
-
+        self._collection_id_pattern = re.compile("value='(?P<collection_id>.*?)';")  # 获取collection id 信息正则
+        self._dir_pattern = re.compile("value='/group/[0-9]*/(?P<dir>.*?)';")   # 获取文件夹目录信息正则
         self.__check_dir(self._source_dir)
 
     def __check_dir(self, dir):
@@ -78,6 +78,53 @@ class Downloader(Loginer):
             except FileNotFoundError:
                 self._logger.error("资源存储路径非法或不正确，请检查settings中SOURCE_DIR配置！")
                 exit(404)
+
+    def __update_source_info(self,course_info, bs4obj, dir):
+        i = 1
+        for e in bs4obj.findAll('a'):
+            try:
+                if 'course.ucas.ac.cn/access/content/group' in e["href"]:
+                    filename = e.find('span', {'class': 'hidden-sm hidden-xs'}).get_text()
+                    self._d_source_info[course_info["name"]].append({'id': i,'name': dir+filename, 'url': e["href"]})
+                    i += 1
+            except (KeyError, AttributeError):
+                continue
+
+    def _recur_dir(self,course_info, source_url, bs4obj):
+        '''
+        递归获取文件夹下文件信息
+        :param source_url:
+        :param bs4obj:
+        :return:
+        '''
+        l_dir_objs =bs4obj.findAll('a', {'title': '文件夹'})
+        if len(l_dir_objs) > 1:
+            # 存在其他文件夹
+            csrf_token = bs4obj.find('input', {'name': 'sakai_csrf_token'}).get("value")  # 获取token，用于请求文件夹资源
+
+            for e in bs4obj.findAll('a', {'title': '文件夹'})[1:]:  # 第一个是当前目录忽略
+                collection_id = self._collection_id_pattern.findall(e["onclick"])[1]  # 获取了课程文件夹信息
+                data = {
+                    'source': 0,
+                    'collectionId': collection_id,
+                    'navRoot': '',
+                    'criteria': 'title',
+                    'sakai_action': 'doNavigate',
+                    'rt_action': '',
+                    'selectedItemId': '',
+                    'itemHidden': 'false',
+                    'itemCanRevise': 'false',
+                    'sakai_csrf_token': csrf_token
+                }
+                res = self._S.post(source_url, data=data)  # 获取文件夹下资源信息
+                bs4obj = BeautifulSoup(res.text, 'html.parser')
+                self._recur_dir(course_info, source_url, bs4obj)
+
+        else:
+            # 没有更深层文件夹了，添加资源信息
+            cur_dir = self._dir_pattern.findall(l_dir_objs[0]["onclick"])[0]  # 获取了课程文件夹信息
+            self.__update_source_info(course_info, bs4obj, cur_dir)
+            return
 
     def _set_course_info(self):
         if not self._l_course_info:
@@ -112,17 +159,24 @@ class Downloader(Loginer):
             res = self._S.get(course_info["url"])
             bs4obj = BeautifulSoup(res.text, "html.parser")
             source_url = bs4obj.find('a', {'title': '资源 - 上传、下载课件，发布文档，网址等信息'}).get("href")
-            res = self._S.get(source_url)
+            res = self._S.get(source_url)   # 获取课程资源页面
             bs4obj = BeautifulSoup(res.text, "html.parser")
-            i = 1
-            for e in bs4obj.findAll('a'):
-                try:
-                    if 'https://course.ucas.ac.cn/access/content/group' in e["href"]:
-                        filename = e.find('span', {'class': 'hidden-sm hidden-xs'}).get_text()
-                        self._d_source_info[course_info["name"]].append({'id': i, 'name': filename, 'url': e["href"]})
-                        i += 1
-                except (KeyError, AttributeError):
-                    continue
+
+            self._recur_dir(course_info,source_url,bs4obj)
+
+
+    def __recur_mkdir(self,course_dir, dirs):
+        '''
+        递归检查目录是否存在，若不存在则创建
+        :param dirs:
+        :return:
+        '''
+        rec_dir = course_dir  # 递归查询的目录
+        while dirs:
+            rec_dir = rec_dir + '/' + dirs[0]
+            if not os.path.exists(rec_dir):
+                os.mkdir(rec_dir)
+            del dirs[0]
 
     def _download_one(self, course_info, source_info):
         '''
@@ -139,9 +193,15 @@ class Downloader(Loginer):
         if not os.path.exists(base_dir):
             os.mkdir(base_dir)
 
-        dir = base_dir + course_info['name']  # 课程目录
-        if not os.path.exists(dir):
-            os.mkdir(dir)
+        course_dir = base_dir + course_info['name']  # 课程目录
+        if not os.path.exists(course_dir):
+            os.mkdir(course_dir)
+
+        dirs = source_info['name'].split('/')[0:-1]  # 只取目录部分
+        if dirs:
+            # 存在文件夹，递归检测文件夹
+            self.__recur_mkdir(course_dir,dirs)
+
         file_path = base_dir + course_info["name"] + '/' + source_info['name']  # 文件存储路径
         if not os.path.isfile(file_path):
             # 只下载没有的文件，若存在不下载，节省流量
