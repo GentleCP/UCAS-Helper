@@ -99,7 +99,10 @@ class Downloader(Loginer):
         '''
         l_dir_objs =bs4obj.findAll('a', {'title': '文件夹'})
         if len(l_dir_objs) > 1:
-            # 存在其他文件夹
+            # 存在其他文件夹，添加当前目录资源信息，接着递归文件夹下内容
+            cur_dir = self._dir_pattern.findall(l_dir_objs[0]["onclick"])[0]  # 获取了课程文件夹信息
+            self.__update_source_info(course_info, bs4obj, cur_dir)
+
             csrf_token = bs4obj.find('input', {'name': 'sakai_csrf_token'}).get("value")  # 获取token，用于请求文件夹资源
 
             for e in bs4obj.findAll('a', {'title': '文件夹'})[1:]:  # 第一个是当前目录忽略
@@ -125,6 +128,7 @@ class Downloader(Loginer):
             cur_dir = self._dir_pattern.findall(l_dir_objs[0]["onclick"])[0]  # 获取了课程文件夹信息
             self.__update_source_info(course_info, bs4obj, cur_dir)
             return
+
 
     def _set_course_info(self):
         if not self._l_course_info:
