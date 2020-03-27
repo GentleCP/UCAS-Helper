@@ -58,10 +58,11 @@ class Loginer:
 
 
 class Downloader(Loginer):
-    def __init__(self, user_info, urls, source_dir):
+    def __init__(self, user_info, urls, source_dir,filter_list):
         super().__init__(user_info, urls)
         self._logger = logging.getLogger("Downloader")
         self._source_dir = source_dir
+        self._filter_list = filter_list
         self._update_sources = []
         self._l_course_info = []
         self._d_source_info = {}
@@ -228,8 +229,9 @@ class Downloader(Loginer):
 
     def _download_all(self):
         for course_info in self._l_course_info:
-            self._set_source_info(course_info)
-            self._download_course(course_info)
+            if course_info['name'] not in self._filter_list:
+                self._set_source_info(course_info)
+                self._download_course(course_info)
         if self._update_sources:
             self._logger.info("[同步完成] 本次更新资源列表如下：")
             for source in self._update_sources:
@@ -237,15 +239,38 @@ class Downloader(Loginer):
         else:
             self._logger.info("[同步完成] 本次无更新内容！")
 
+    def __open_dir(self):
+        '''
+        当同步完成的时候，打开对应的目录
+        :return:
+        '''
+        if sys.platform.startswith('win'):
+            result = os.system('start ' + self._source_dir)
+        elif sys.platform.startswith('linux'):
+            result = os.system('nautilus ' + self._source_dir)
+        else:
+            result = os.system('open ' + self._source_dir)
+        if result == 0:
+            print("已为您打开资源目录，请根据更新资源列表查询对应文件！")
+        else:
+            print("打开资源目录失败，请手动开启！")
+
     def _download_course_by_season(self,season):
         for course_info in self._l_course_info:
-            if season in course_info['name']:
+            if season in course_info['name'] and course_info['name'] not in self._filter_list:
                 self._set_source_info(course_info)
                 self._download_course(course_info)
+
         if self._update_sources:
             self._logger.info("[同步完成] 本次更新资源列表如下：")
             for source in self._update_sources:
                 print('\033[1;41m' + source + '\033[0m')
+
+            is_open = input("是否打开资源所在目录(默认n)？(y/n)")
+            if is_open:
+                self.__open_dir()
+            exit(200)
+
         else:
             self._logger.info("[同步完成] 本次无更新内容！")
 

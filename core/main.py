@@ -94,7 +94,8 @@ def main():
     wifi_loginer = WifiLoginer(accounts_path=settings.ACCOUNTS_PATH)
     downloader = Downloader(user_info=settings.USER_INFO,
                             urls=settings.URLS,
-                            source_dir=settings.SOURCE_DIR)
+                            source_dir=settings.SOURCE_DIR,
+                            filter_list = settings.FILTER_LIST)
     assesser = Assesser(settings.USER_INFO, settings.URLS,settings.ASSESS_MSG)
     init = Init(WELCOME_MESSAGE, wifi_loginer, downloader,assesser)
     init.run()
