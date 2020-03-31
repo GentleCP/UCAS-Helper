@@ -236,8 +236,15 @@ class Downloader(Loginer):
             self._logger.info("[同步完成] 本次更新资源列表如下：")
             for source in self._update_sources:
                 print('\033[1;41m'+source+'\033[0m')
+
+            is_open = input("是否打开资源所在目录(默认n)？(y/n)")
+            if is_open:
+                self.__open_dir()
+            exit(200)
+
         else:
             self._logger.info("[同步完成] 本次无更新内容！")
+            exit(200)
 
     def __open_dir(self):
         '''
@@ -273,6 +280,8 @@ class Downloader(Loginer):
 
         else:
             self._logger.info("[同步完成] 本次无更新内容！")
+            exit(200)
+
 
     def _show(self, infos):
         if infos:
