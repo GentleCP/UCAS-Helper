@@ -137,9 +137,10 @@
     git clone https://github.com/GentleCP/UCASHelper.git
     ```
     > 如果没有安装`git`,也可以直接下载源代码或者在`release`中下载我发布的最新版本
-- 安装依赖包  
+- 安装依赖包
     ```text
     pip install -r requirements.txt
+    conda env create -f environment.yml  # 如果采用conda环境
     ```
 
 - 运行ucashelper.py  
