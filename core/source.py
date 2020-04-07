@@ -273,7 +273,7 @@ class Downloader(Loginer):
             for source in self._update_sources:
                 print('\033[1;41m' + source + '\033[0m')
 
-            is_open = input("是否打开资源所在目录(默认y)？(y/n)")
+            is_open = input("是否打开资源所在目录(默认n)？(y/n)")
             if is_open =='y':
                 self.__open_dir()
             exit(200)
