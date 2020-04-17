@@ -13,6 +13,8 @@ import requests
 
 from bs4 import BeautifulSoup
 
+from core.utils import download_file
+
 sys.setrecursionlimit(100000)
 
 
@@ -211,9 +213,10 @@ class Downloader(Loginer):
         if not os.path.isfile(file_path):
             # 只下载没有的文件，若存在不下载，节省流量
             self._logger.info("正在下载:{}".format(source_info['name']))
-            content = self._S.get(source_info['url']).content
-            with open(file_path, 'wb') as f:
-                f.write(content)
+            # content = self._S.get(source_info['url']).content
+            # with open(file_path, 'wb') as f:
+            #     f.write(content)
+            download_file(url=source_info['url'], session=self._S, file_path=file_path)
             self._update_sources.append("[{}:{}]".format(course_info["name"], source_info['name']))  # 记录更新的课程数据
 
     def _download_course(self, course_info):

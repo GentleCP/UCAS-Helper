@@ -29,6 +29,7 @@ dependencies:
     - prettytable==0.7.2
     - requests==2.22.0
     - soupsieve==1.9.5
+    - tqdm==4.45.0
     - urllib3==1.25.7
 prefix: /Users/dongchaopeng/miniconda3/envs/UCASHelper
 
