@@ -12,6 +12,7 @@ import re
 import requests
 
 from bs4 import BeautifulSoup
+from prettytable import PrettyTable
 
 from core.utils import download_file
 
@@ -28,6 +29,12 @@ class Loginer:
         self._S = requests.session()
         self._user_info = user_info
         self._urls = urls
+
+    def __keep_session(self):
+        res = self._S.get(url=self._urls['course_select_url'])
+        course_select_url = re.search(r"window.location.href='(?P<course_select_url>.*?)'", res.text).groupdict().get(
+            "course_select_url")
+        self._S.get(course_select_url)
 
     def _login(self):
         headers = {
@@ -53,6 +60,7 @@ class Loginer:
             if json_res["f"]:
                 self._S.get(res.json()["msg"])
                 self._logger.info("登录成功！")
+                self.__keep_session()
 
             else:
                 self._logger.error("登录失败，请检查settings下的USER_INFO是否正确！")
@@ -386,10 +394,10 @@ class Downloader(Loginer):
 
 class Assesser(Loginer):
 
-    def __init__(self, user_info, urls,assess_msg):
+    def __init__(self, user_info, urls,assess_msgs):
         super().__init__(user_info, urls)
         self._logger = logging.getLogger("Assesser")
-        self._assess_msg = assess_msg
+        self._assess_msgs = assess_msgs
         self.headers =  {
             'Connection': 'keep-alive',
             'Accept': '*/*',
@@ -402,14 +410,16 @@ class Assesser(Loginer):
             'Accept-Language': 'zh-CN,zh;q=0.9',
         }
         self._id_pattern = re.compile('/evaluate/.*?/(?P<id>.*?)$')
+        self._course_assess_url = None  # 动态获取课程评估地址
 
     def _get_course_ids(self):
-        res = self._S.get(url=self._urls['course_select_url'])
-        course_select_url = re.search(r"window.location.href='(?P<course_select_url>.*?)'", res.text).groupdict().get(
-            "course_select_url")
-        self._S.get(course_select_url)
-
-        res = self._S.get(self._urls['course_assess_url'])
+        # 获取课程评估url
+        res = self._S.get(url='https://jwxk.ucas.ac.cn/notice/view/1')
+        bs4obj = BeautifulSoup(res.text,'html.parser')
+        href = bs4obj.find('a',string=re.compile('.*学期$')).get('href')
+        self._course_assess_url = self._urls['base_url'] + href
+        # 获取课程id
+        res = self._S.get(self._course_assess_url)
         bs4obj = BeautifulSoup(res.text, 'html.parser')
         urls = [url.get('href') for url in bs4obj.find_all('a', {'class': 'btn'})]
         course_ids = []
@@ -418,26 +428,28 @@ class Assesser(Loginer):
         return course_ids
 
     def __assess_course(self,course_id):
-        res = self._S.get('http://jwxk.ucas.ac.cn/evaluate/evaluateCourse/' + course_id )
+        res = self._S.get('https://jwxk.ucas.ac.cn/evaluate/evaluateCourse/' + course_id )
         s = res.text.split('?s=')[-1].split('"')[0]
-        soup = BeautifulSoup(res.text, 'html.parser')
-        radios = soup.find_all('input', attrs={'type': 'radio'})
+        bs4obj = BeautifulSoup(res.text, 'html.parser')
+        radios = bs4obj.find_all('input', attrs={'type': 'radio'})
         value = radios[0]['value']
         data = {}
         for radio in radios:
             data[radio['name']] = value
-        data['item_14']= self._assess_msg['item_14']  # 这门课我最喜欢什么
-        data['item_15']= self._assess_msg['item_15']  # 我认为本课程应从哪些方面需要进一步改进和提高？
-        data['item_16']= self._assess_msg['item_16']  # 我平均每周在这门课程上花费多少小时？
-        data['item_17']= self._assess_msg['item_17']  # 在参与这门课之前，我对这个学科领域兴趣如何
-        data['item_18']= self._assess_msg['item_18']  # 我对该课程的课堂参与度（包括出勤、回答问题等）
-        data['item_25']=''
-        data['radio_19']=''
-        data['subjectiveRadio']= '20'   # 教室大小合适
-        data['subjectiveCheckbox']= '27'  # 自己需求和兴趣
+        textareas = bs4obj.find_all('textarea')
+        for textarea, asses_msg in zip(textareas,self._assess_msgs[0:-2]):
+            # 填写主观评价内容
+            item_id = textarea.get('id')
+            data[item_id] = asses_msg
+        subjectiveRadio = bs4obj.find('input', {'class':'required radio'}).get('id')
+        subjectiveCheckbox = bs4obj.find('input',{'class','required checkbox'}).get('id')
+        data['subjectiveRadio']= subjectiveRadio   # 教室大小合适
+        data['subjectiveCheckbox']= subjectiveCheckbox  # 自己需求和兴趣
 
-        res = self._S.post('http://jwxk.ucas.ac.cn/evaluate/saveCourseEval/'+course_id+'?s='+s, data=data,headers=self.headers)
-
+        post_url = 'https://jwxk.ucas.ac.cn/evaluate/saveCourseEval/'+course_id+'?s='+s
+        # print(post_url)
+        res = self._S.post(post_url, data=data,headers=self.headers)
+        # print(res.text)
         tmp = BeautifulSoup(res.text, 'html.parser')
         try:
             flag = tmp.find('label', attrs={'id': 'loginSuccess'})
@@ -458,7 +470,9 @@ class Assesser(Loginer):
 
 
     def _get_teacher_ids(self):
-        res = self._S.get(self._urls['teacher_assess_url'])
+        # 通过课程评估url得到教师评估url
+        teacher_assess_url = self._course_assess_url.replace('course','teacher')
+        res = self._S.get(teacher_assess_url)
         bs4obj = BeautifulSoup(res.text, 'html.parser')
         urls = [url.get('href') for url in bs4obj.find_all('a', {'class': 'btn'})]
         teacher_ids = []
@@ -467,19 +481,22 @@ class Assesser(Loginer):
         return teacher_ids
 
     def __assess_teacher(self, teacher_id):
-        res = self._S.get('http://jwxk.ucas.ac.cn/evaluate/evaluateTeacher/' + teacher_id)
+        res = self._S.get('https://jwxk.ucas.ac.cn/evaluate/evaluateTeacher/' + teacher_id)
         bs4obj = BeautifulSoup(res.text,'html.parser')
-        submit_url = 'http://jwxk.ucas.ac.cn' + bs4obj.find('form',{'id':'regfrm'}).get('action')
+        post_url = 'https://jwxk.ucas.ac.cn' + bs4obj.find('form',{'id':'regfrm'}).get('action')
         radios = bs4obj.find_all('input', attrs={'type': 'radio'})
         value = radios[0]['value']  # 默认全5星好评
         data = {}
         for radio in radios:
             data[radio['name']] = value
-        data['item_43'] = self._assess_msg['item_43']  # 这位老师的教学，你最喜欢什么？
-        data['item_44'] = self._assess_msg['item_44'] # 您对老师有哪些意见和建议？
-        data['subjectiveRadio'] = ''
+        textareas = bs4obj.find_all('textarea')
+        for textarea, asses_msg in zip(textareas, self._assess_msgs[-2:]):
+            # 填写主观评价内容
+            item_id = textarea.get('id')
+            data[item_id] = asses_msg
         data['subjectiveCheckbox'] = ''
-        res = self._S.post(submit_url,data=data,headers = self.headers)
+        data['subjectiveRadio'] = ''
+        res = self._S.post(post_url,data=data,headers = self.headers)
         tmp = BeautifulSoup(res.text, 'html.parser')
         try:
             flag = tmp.find('label', attrs={'id': 'loginSuccess'})
@@ -506,3 +523,29 @@ class Assesser(Loginer):
         teacher_ids = self._get_teacher_ids()
         self._assess_teachers(teacher_ids)
 
+
+class GradeObserver(Loginer):
+    """
+    课程成绩查看器
+    """
+    def __init__(self, user_info,urls):
+        super().__init__(user_info, urls)
+        pass
+
+    def _get_grade(self):
+        res = self._S.get(self._urls['grade_url'])
+        bs4obj = BeautifulSoup(res.text,'html.parser')
+        thead = bs4obj.find('thead')
+        pd = PrettyTable()
+        pd.field_names = [x.string for x in thead.find_all('th')]
+
+        tbody = bs4obj.find('tbody')
+        for tr in tbody.find_all('tr'):
+            # tr:每一门课程信息
+            pd.add_row([x.string.strip() for x in tr.find_all('td')])
+        self._logger.info('成绩查询结果如下')
+        print(pd)
+        
+    def run(self):
+        self._login()
+        self._get_grade()

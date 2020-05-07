@@ -8,7 +8,7 @@
 import logging
 import time
 
-from core.source import Downloader,BackToMain,Assesser
+from core.source import Downloader,BackToMain,Assesser,GradeObserver
 from core.wifi import WifiLoginer,WifiError
 import settings
 
@@ -25,6 +25,7 @@ WELCOME_MESSAGE = """
 **                            2:wifi login                                     **
 **                            3:wifi logout                                    **
 **                            4:course assess                                  **
+**                            5:query grades                                   **
 **                            q:exit                                           **
 *********************************************************************************
 """
@@ -40,6 +41,7 @@ class Init:
                  wifi_loginer=None,
                  downloader=None,
                  assesser= None,
+                 grade_observer = None,
                  ):
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s:[%(message)s]')
         self._logger = logging.getLogger("Init")
@@ -47,6 +49,7 @@ class Init:
         self._wifi_loginer = wifi_loginer
         self._downloader = downloader
         self._assesser = assesser
+        self._grade_observer = grade_observer
 
     def _show_welcome(self):
         print(self._welcome_msg)
@@ -84,6 +87,8 @@ class Init:
                 elif option == 4:
                     self._assesser.run()
 
+                elif option == 5:
+                    self._grade_observer.run()
 
     def run(self):
         self._show_welcome()
@@ -97,7 +102,8 @@ def main():
                             source_dir=settings.SOURCE_DIR,
                             filter_list = settings.FILTER_LIST)
     assesser = Assesser(settings.USER_INFO, settings.URLS,settings.ASSESS_MSG)
-    init = Init(WELCOME_MESSAGE, wifi_loginer, downloader,assesser)
+    grade_observer = GradeObserver(settings.USER_INFO, settings.URLS)
+    init = Init(WELCOME_MESSAGE, wifi_loginer, downloader,assesser, grade_observer)
     init.run()
 
 
