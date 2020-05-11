@@ -20,7 +20,7 @@ WELCOME_MESSAGE = """
 **      #   #  #     #######      #    #  #  #     #     #     #     #  #      **
 **       ###    ### ##     ##  ###     #  #   ###  ##### #      ###  #   #     **
 **                            copyright@GentleCP                               **
-**                            website:https://www.gentlecp.com                 **
+**                            version: 1.7.1                                   **
 **                            1:course sources download                        **
 **                            2:wifi login                                     **
 **                            3:wifi logout                                    **
