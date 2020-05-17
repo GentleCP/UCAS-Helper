@@ -12,7 +12,7 @@ USER_INFO = {
     'password': '',
     'remember': 'undefined'  # 此处不要动
 }
-SOURCE_DIR = '/Users/dongchaopeng/Documents/学习资料/UCAS-sources'
+SOURCE_DIR = ''
 
 # ------------------后面的不要动--------------#
 
