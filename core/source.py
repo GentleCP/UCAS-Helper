@@ -10,6 +10,7 @@ import sys
 import logging
 import re
 import requests
+import time
 
 from bs4 import BeautifulSoup
 from prettytable import PrettyTable
@@ -34,7 +35,10 @@ class Loginer:
         res = self._S.get(url=self._urls['course_select_url'])
         course_select_url = re.search(r"window.location.href='(?P<course_select_url>.*?)'", res.text).groupdict().get(
             "course_select_url")
+        print(course_select_url)
         self._S.get(course_select_url)
+
+
 
     def _login(self):
         headers = {
@@ -414,7 +418,7 @@ class Assesser(Loginer):
 
     def _get_course_ids(self):
         # 获取课程评估url
-        res = self._S.get(url='https://jwxk.ucas.ac.cn/notice/view/1')
+        res = self._S.get(url=self._urls['view_url'])
         bs4obj = BeautifulSoup(res.text,'html.parser')
         href = bs4obj.find('a',string=re.compile('.*学期$')).get('href')
         self._course_assess_url = self._urls['base_url'] + href
@@ -428,7 +432,7 @@ class Assesser(Loginer):
         return course_ids
 
     def __assess_course(self,course_id):
-        res = self._S.get('https://jwxk.ucas.ac.cn/evaluate/evaluateCourse/' + course_id )
+        res = self._S.get(self._urls['base_evaluateCourse_url'] + course_id )
         s = res.text.split('?s=')[-1].split('"')[0]
         bs4obj = BeautifulSoup(res.text, 'html.parser')
         radios = bs4obj.find_all('input', attrs={'type': 'radio'})
@@ -446,7 +450,7 @@ class Assesser(Loginer):
         data['subjectiveRadio']= subjectiveRadio   # 教室大小合适
         data['subjectiveCheckbox']= subjectiveCheckbox  # 自己需求和兴趣
 
-        post_url = 'https://jwxk.ucas.ac.cn/evaluate/saveCourseEval/'+course_id+'?s='+s
+        post_url = self._urls['base_saveCourseEval_url'] +course_id+'?s='+s
         # print(post_url)
         res = self._S.post(post_url, data=data,headers=self.headers)
         # print(res.text)
@@ -464,6 +468,7 @@ class Assesser(Loginer):
 
     def _assess_courses(self, course_ids):
         self._logger.info('开始评估课程')
+        time.sleep(2)
         for course_id in course_ids:
             self.__assess_course(course_id)
         self._logger.info('课程评估完毕')
@@ -481,9 +486,9 @@ class Assesser(Loginer):
         return teacher_ids
 
     def __assess_teacher(self, teacher_id):
-        res = self._S.get('https://jwxk.ucas.ac.cn/evaluate/evaluateTeacher/' + teacher_id)
+        res = self._S.get(self._urls['base_evaluateTeacher_url'] + teacher_id)
         bs4obj = BeautifulSoup(res.text,'html.parser')
-        post_url = 'https://jwxk.ucas.ac.cn' + bs4obj.find('form',{'id':'regfrm'}).get('action')
+        post_url = self._urls['base_url'] + bs4obj.find('form',{'id':'regfrm'}).get('action')
         radios = bs4obj.find_all('input', attrs={'type': 'radio'})
         value = radios[0]['value']  # 默认全5星好评
         data = {}

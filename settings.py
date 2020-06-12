@@ -18,12 +18,16 @@ SOURCE_DIR = ''
 
 ACCOUNTS_PATH = 'accounts.json'
 URLS = {
-    'base_url':'https://jwxk.ucas.ac.cn',
+    'base_url':'http://jwxk.ucas.ac.cn',
     'login_url': 'http://onestop.ucas.ac.cn/Ajax/Login/0',
     'logout_url': 'http://sep.ucas.ac.cn/logout?o=platform',
     'course_info_url': 'http://sep.ucas.ac.cn/portal/site/16/801',
-    'grade_url':'https://jwxk.ucas.ac.cn/score/yjs/all',
+    'grade_url':'http://jwxk.ucas.ac.cn/score/yjs/all',
+    'view_url':'http://jwxk.ucas.ac.cn/notice/view/1',
     'course_select_url': 'http://sep.ucas.ac.cn/portal/site/226/821',
+    'base_saveCourseEval_url':'http://jwxk.ucas.ac.cn/evaluate/saveCourseEval/',
+    'base_evaluateCourse_url':'http://jwxk.ucas.ac.cn/evaluate/evaluateCourse/',
+    'base_evaluateTeacher_url':'http://jwxk.ucas.ac.cn/evaluate/evaluateTeacher/'
 }
 
 # Assess message
