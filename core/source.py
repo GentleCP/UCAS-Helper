@@ -35,7 +35,7 @@ class Loginer:
         res = self._S.get(url=self._urls['course_select_url'])
         course_select_url = re.search(r"window.location.href='(?P<course_select_url>.*?)'", res.text).groupdict().get(
             "course_select_url")
-        print(course_select_url)
+        # print(course_select_url)
         self._S.get(course_select_url)
 
 
@@ -54,6 +54,7 @@ class Loginer:
         }
         try:
             res = self._S.post(url=self._urls["login_url"], data=self._user_info, headers=headers, timeout=5)
+
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ReadTimeout):
