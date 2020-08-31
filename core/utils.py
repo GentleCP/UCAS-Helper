@@ -10,7 +10,7 @@ import logging
 from tqdm import tqdm
 from urllib.parse import urlparse
 
-def util_login(stuid,password):
+def login_wifi(stuid,password):
     try:
         query_string = urlparse(requests.get("http://210.77.16.21").url).query
         payload = {

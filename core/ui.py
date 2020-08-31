@@ -1,6 +1,6 @@
 # @Author  : GentleCP
 # @Email   : 574881148@qq.com
-# @File    : main.py
+# @File    : ui.py
 # @Item    : PyCharm
 # @Time    : 2019/11/28/028 14:00
 # @WebSite : https://www.gentlecp.com
@@ -8,8 +8,12 @@
 import logging
 import time
 
-from core.source import Downloader,BackToMain,Assesser,GradeObserver
+from core.assess import Assesser
+from core.grade import GradeObserver
+from core.download import Downloader
+from core.exception import BackToMain
 from core.wifi import WifiLoginer,WifiError
+
 import settings
 
 WELCOME_MESSAGE = """
@@ -20,7 +24,7 @@ WELCOME_MESSAGE = """
 **      #   #  #     #######      #    #  #  #     #     #     #     #  #      **
 **       ###    ### ##     ##  ###     #  #   ###  ##### #      ###  #   #     **
 **                            copyright@GentleCP                               **
-**                            version: 1.7.2                                   **
+**                            version: 2.0.1                                   **
 **                github: https://github.com/GentleCP/UCASHelper               **
 **                            1:course sources download                        **
 **                            2:wifi login                                     **
@@ -39,18 +43,18 @@ class Init:
 
     def __init__(self,
                  welcome_msg,
-                 wifi_loginer=None,
+                 wifiLoginer=None,
                  downloader=None,
                  assesser= None,
-                 grade_observer = None,
+                 gradeObserver = None,
                  ):
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s:[%(message)s]')
         self._logger = logging.getLogger("Init")
         self._welcome_msg = welcome_msg
-        self._wifi_loginer = wifi_loginer
+        self._wifi_loginer = wifiLoginer
         self._downloader = downloader
         self._assesser = assesser
-        self._grade_observer = grade_observer
+        self._grade_observer = gradeObserver
 
     def _show_welcome(self):
         print(self._welcome_msg)
@@ -97,14 +101,17 @@ class Init:
 
 
 def main():
-    wifi_loginer = WifiLoginer(accounts_path=settings.ACCOUNTS_PATH)
+    wifiLoginer = WifiLoginer(accounts_path=settings.ACCOUNTS_PATH)
     downloader = Downloader(user_info=settings.USER_INFO,
                             urls=settings.URLS,
                             source_dir=settings.SOURCE_DIR,
                             filter_list = settings.FILTER_LIST)
-    assesser = Assesser(settings.USER_INFO, settings.URLS,settings.ASSESS_MSG)
-    grade_observer = GradeObserver(settings.USER_INFO, settings.URLS)
-    init = Init(WELCOME_MESSAGE, wifi_loginer, downloader,assesser, grade_observer)
+    assesser = Assesser(user_info=settings.USER_INFO,
+                        urls=settings.URLS,
+                        assess_msgs=settings.ASSESS_MSG)
+    gradeObserver = GradeObserver(user_info=settings.USER_INFO,
+                                  urls=settings.URLS)
+    init = Init(WELCOME_MESSAGE, wifiLoginer, downloader,assesser, gradeObserver)
     init.run()
 
 

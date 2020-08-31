@@ -18,16 +18,46 @@ SOURCE_DIR = ''
 
 ACCOUNTS_PATH = 'accounts.json'
 URLS = {
-    'base_url':'http://jwxk.ucas.ac.cn',
-    'login_url': 'http://onestop.ucas.ac.cn/Ajax/Login/0',
-    'logout_url': 'http://sep.ucas.ac.cn/logout?o=platform',
-    'course_info_url': 'http://sep.ucas.ac.cn/portal/site/16/801',
-    'grade_url':'http://jwxk.ucas.ac.cn/score/yjs/all',
-    'view_url':'http://jwxk.ucas.ac.cn/notice/view/1',
-    'course_select_url': 'http://sep.ucas.ac.cn/portal/site/226/821',
-    'base_saveCourseEval_url':'http://jwxk.ucas.ac.cn/evaluate/saveCourseEval/',
-    'base_evaluateCourse_url':'http://jwxk.ucas.ac.cn/evaluate/evaluateCourse/',
-    'base_evaluateTeacher_url':'http://jwxk.ucas.ac.cn/evaluate/evaluateTeacher/'
+    'base_url':{
+        'http':'http://jwxk.ucas.ac.cn',
+        'https':'https://jwxk.ucas.ac.cn',
+    },
+    'login_url': {
+        'http':'http://onestop.ucas.ac.cn/Ajax/Login/0',
+        'https':'https://onestop.ucas.ac.cn/Ajax/Login/0'
+    },
+    'logout_url': {
+        'http':'http://sep.ucas.ac.cn/logout?o=platform',
+        'https':'https://sep.ucas.ac.cn/logout?o=platform',
+    },
+    'course_info_url': {
+        'http':'http://sep.ucas.ac.cn/portal/site/16/801',
+        'https':'https://sep.ucas.ac.cn/portal/site/16/801',
+    },
+    'grade_url':{
+        'http':'http://jwxk.ucas.ac.cn/score/yjs/all',
+        'https':'http://jwxk.ucas.ac.cn/score/yjs/all',
+    },
+    'view_url':{
+        'http':'http://jwxk.ucas.ac.cn/notice/view/1',
+        'https':'https://jwxk.ucas.ac.cn/notice/view/1',
+    },
+    'course_select_url': {
+        'http':'http://sep.ucas.ac.cn/portal/site/226/821',
+        'https':'https://sep.ucas.ac.cn/portal/site/226/821',
+    },
+    'base_saveCourseEval_url':{
+        'http':'http://jwxk.ucas.ac.cn/evaluate/saveCourseEval/',
+        'https':'https://jwxk.ucas.ac.cn/evaluate/saveCourseEval/',
+    },
+    'base_evaluateCourse_url':{
+        'http':'http://jwxk.ucas.ac.cn/evaluate/evaluateCourse/',
+        'https':'https://jwxk.ucas.ac.cn/evaluate/evaluateCourse/',
+    },
+    'base_evaluateTeacher_url':{
+        'http':'http://jwxk.ucas.ac.cn/evaluate/evaluateTeacher/',
+        'https':'https://jwxk.ucas.ac.cn/evaluate/evaluateTeacher/'
+    }
 }
 
 # Assess message
@@ -47,3 +77,5 @@ FILTER_LIST = [
     '没啥卵用课-1 19-20春季',
     '有点卵用课-2 19-20春季',  # 多个之间逗号隔开，务必输入课程全称！
 ]
+
+

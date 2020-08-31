@@ -1,4 +1,7 @@
 # UCAS Helper
+![python version](https://img.shields.io/badge/python-3.5%2B-blue)
+![demo version](https://img.shields.io/badge/version-2.0.1-yellowgreen)
+
 原本只是一时兴起，为了方便写的UCAS课程网站小助手，帮助我自己进行课程资源快速同步。
 没想到后面随着功能的增加，项目也变得小有规模起来，因此将其开放给全体UCAS同学，小助手的使用方式在下面有介绍，
 十分简便（需要一点对`python`环境的了解，百度`python`的安装即可），如果你觉得本项目对你有所帮助的话，
@@ -48,11 +51,18 @@
 
 ![](img/1.7.0.png)
 
-# 2. 版本号
+# 2. 更新日志
 
-1.7.2
-
-## 2.1 更新内容
+- [2.0.1] 对整体代码进行了重构，解决因课程网站`http`,`https`协议切换导致的访问出错问题，
+同时更改了项目接口，方便小白和专业人士操作。以前均通过可视化`UI`界面进行操作，现在用户可选择`UI`和命令行两种模式，具体见**5.3使用步骤**。
+对各个功能测试结果如下：
+    - [x] 课程资源同步
+    - [x] 分数查询
+    - [ ] 自动评教：由于课程网站评教操作关闭，尚未测试
+    - [ ] 校园网登录：由于不在学校，尚未测试
+    - [ ] 校园网账号破解：同上
+    > 未测试内容基本上沿用了之前的代码，按照常理不会出错，如果有问题，欢迎提出`issue`
+    
 - [1.7.2] 修复了因课程主站使用http协议导致的错误  
     > GKD的课程主站偶尔抽风，一会用https，一会用http，导致访问端口出现问题，现统一将用到的url放到`settings.py/URLS`中，
     当主站修改应用协议时修改对应url的协议即可。例如`'base_url':'http://jwxk.ucas.ac.cn'`>`'base_url':'https://jwxk.ucas.ac.cn'`,
@@ -146,26 +156,45 @@
 
 ## 5.3 使用步骤
 
-- 克隆本项目到本地  
+1. 克隆本项目到本地  
     ```text
     git clone https://github.com/GentleCP/UCASHelper.git
     ```
     > 如果没有安装`git`,也可以直接下载源代码或者在`release`中下载我发布的最新版本
-- 安装依赖包
+2. 安装依赖包
     ```text
-    pip install -r requirements.txt
+    pip install -r requirements.txt  # 强烈建议使用虚拟环境
     conda env create -f environment.yml  # 如果采用conda环境
     ```
-
-- 运行ucashelper.py  
-    ```text
-    python ucashelper.py
-    ```
-    > 到此就可以看到小白的操作窗口了
-- 爆破账号  
-    ```text
-    python ucashelper.py hack
-    ```
+3. 自由选择`UI`界面操作或命令行直接运行，可通过`python ucashelper --help`获得参数帮助
+    - UI界面运行
+        ```text
+        python ucashelper.py ui
+        ```
+    - 同步课程资源 
+        ```text
+        python ucashelper.py down
+        ```
+    - 自动评教
+        ```text
+        python ucashelper.py assess
+        ```
+    - 查询成绩
+        ```text
+        python ucashelper.py grade
+        ```
+    - 登录校园网
+        ```text
+        python ucashelper.py login
+        ```
+    - 登出校园网
+        ```text
+        python ucashelper.py logout
+        ```
+    - 爆破账号  
+        ```text
+        python ucashelper.py hack
+        ```
 
 # 6. 提问
 对项目如有任何问题或修改意见，欢迎提交`issue`或者邮件私信给我～

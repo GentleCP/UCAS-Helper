@@ -9,14 +9,13 @@ import json
 import time
 import datetime
 import requests
-from core.utils import util_login
+from core.utils import login_wifi
 
-class WifiError(Exception):
-    pass
+from core.exception import WifiError
 
-class AccHacker:
-    def __init__(self, data_path='data.txt',
-                 password_path = 'password.txt',
+class AccHacker(object):
+    def __init__(self, data_path='data/data.txt',
+                 password_path = 'data/password.txt',
                  accounts_path='accounts.json'):
 
         self._logger = logging.getLogger("AccHacker")
@@ -78,7 +77,7 @@ class AccHacker:
             start = time.time()
             hacked = False
             for i,password in enumerate(self.l_passwords):
-                login_res = util_login(stuid, password)
+                login_res = login_wifi(stuid, password)
                 print("\r","正在测试账号{},密码:{},预期进度：{:.2f}%,耗费时间:{:.2f}秒:".format(stuid,
                                                                          password,
                                                                          (i / range_num) * 100,
@@ -111,7 +110,7 @@ class AccHacker:
         self._acc_hack()
 
 
-class WifiLoginer:
+class WifiLoginer(object):
 
     def __init__(self, accounts_path):
         self._logger = logging.getLogger("WifiLoginer")
@@ -199,7 +198,7 @@ class WifiLoginer:
             self._save_accounts(self.d_accounts)
             raise WifiError
 
-        login_res = util_login(stuid, password)
+        login_res = login_wifi(stuid, password)
         if not login_res:
             self._logger.error("网络连接出错，可能原因：1、未连接上校园网 2、当前网络环境无可分配动态ip")
             raise WifiError
