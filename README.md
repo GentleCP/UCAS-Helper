@@ -16,8 +16,10 @@
    * [4. 效果预览](#4-效果预览)
    * [5. 部署使用](#5-部署使用)
       * [5.1 使用前提](#51-使用前提)
-      * [5.2 配置修改](#52-配置修改)
-      * [5.3 使用步骤](#53-使用步骤)
+      * [5.2 部署项目](#52-部署项目)
+         * [5.2.1 自动部署](#521-自动部署)
+         * [5.2.2 手动部署](#522-手动部署)
+      * [5.3 修改配置](#53-修改配置)
    * [6. 问题反馈](#6-问题反馈)
    
 # 前言
@@ -41,7 +43,7 @@
 
 ## 1.2 wifi登录
 提供了自动登录的功能，且允许添加多个账号，当一个账号流量使用完后，可用下一个账号自动登录，
-每月自动更新。出于隐私保护，项目不直接提供爆破的账号密码信息（以防被外来人员利用），在校学生可参考**5.3使用步骤**，
+每月自动更新。出于隐私保护，项目不直接提供爆破的账号密码信息（以防被外来人员利用），在校学生可参考**5.部署使用**，
 破解新的账号。
 > 爆破需在校园网环境下，请确保你已正确连接校园网（建议有线）且未登录校园网。
 爆破时间较长（慢的时候2-3个小时），因此建议晚上睡觉的时候开启，
@@ -74,7 +76,7 @@
 # 2. 更新日志
 
 - [2.0.1] 对整体代码进行了重构，解决因课程网站`http`,`https`协议切换导致的访问出错问题，
-同时更改了项目接口，方便小白和专业人士操作。以前均通过可视化`UI`界面进行操作，现在用户可选择`UI`和命令行两种模式，具体见**5.3使用步骤**。
+同时更改了项目接口，方便小白和专业人士操作。以前均通过可视化`UI`界面进行操作，现在用户可选择`UI`和命令行两种模式，具体见**5.部署使用**。
 对各个功能测试结果如下：
     - [x] 课程资源同步
     - [x] 分数查询
@@ -147,14 +149,52 @@
 ## 5.1 使用前提
 项目采用python语言编写，需要你本地装有python3环境（建议python3.5+），如果采用`git`方式克隆，需先安装好`git`
 
-## 5.2 配置修改
+
+## 5.2 部署项目
+提供两种部署使用方法：`自动化部署`(懒人推荐)和`手动部署`，前者在`windows`环境下要求安装`git`，采用`git`提供的终端（需要用到`shell`命令，`windows`cmd不支持）
+
+### 5.2.1 自动部署
+> 注意：如果选择采用虚拟环境，请确保`mkvirtualenv`命令可用。
+- 采用虚拟环境（推荐） 
+    - `pip`:多为`windows`用户,进入`git`提供的`bash`终端
+        ```text
+        wget https://github.com/GentleCP/UCASHelper/archive/master.zip && unzip master.zip && cd UCASHelper-master;mkvirtualenv ucashelper && pip install -r requirements.txt         
+        ```
+    - `pip3`:`mac`,`linux`用户
+        ```text
+        wget https://github.com/GentleCP/UCASHelper/archive/master.zip && unzip master.zip && cd UCASHelper-master;mkvirtualenv ucashelper && pip3 install -r requirements.txt
+        ```
+- 不采用虚拟环境 
+    - `pip`
+        ```text
+        wget https://github.com/GentleCP/UCASHelper/archive/master.zip && unzip master.zip && cd UCASHelper-master && pip install -r requirements.txt         
+        ```
+    - `pip3`
+        ```text
+        wget https://github.com/GentleCP/UCASHelper/archive/master.zip && unzip master.zip && cd UCASHelper-master && pip3 install -r requirements.txt
+        ```
+### 5.2.2 手动部署
+1. 克隆本项目到本地（需要`git`）或下载源代码压缩包或下载`realease`版本代码(推荐)  
+    ```text
+    git clone https://github.com/GentleCP/UCASHelper.git
+    ```
+    
+2. 进入项目目录安装依赖包
+    ```text
+    pip install -r requirements.txt  # 强烈建议使用虚拟环境
+    conda env create -f environment.yml  # 如果采用conda环境
+    ```
+
+
+## 5.3 修改配置
+根据需求修改配置文件:`settings.py`,`accounts.json`
 - 获取课程资源
-    - 进入[settings.py](settings.py)，修改你自己的用户名和密码
-    - 修改SOURCE_DIR，这个目录是所有课程资源存放的目录，根据你的个人需求修改  
+    - 进入[settings.py](settings.py)，找到`USER_INFO`修改你自己的用户名和密码
+    - 修改`SOURCE_DIR`，这个目录是所有课程资源存放的目录，根据你的个人需求修改  
         > 例如`D:/UCAS-sources`
     > 在校园网内无需登录wifi，直接可登录课程网站
 - 登录wifi  
-    - wifi登录需修改根目录下的wifi账号，添加到useful_accounts中，格式如下：
+    - wifi登录需修改根目录下的`accounts.json`，添加到useful_accounts中，格式如下：
         ```text
           {
               "useful_accounts": [
@@ -174,47 +214,6 @@
         ```
         每个账号一个，允许存储多个账号，当遇到一个账号流量不够的时候自动切换到下一个账号登录
 
-## 5.3 使用步骤
-
-1. 克隆本项目到本地  
-    ```text
-    git clone https://github.com/GentleCP/UCASHelper.git
-    ```
-    > 如果没有安装`git`,也可以直接下载源代码或者在`release`中下载我发布的最新版本
-2. 安装依赖包
-    ```text
-    pip install -r requirements.txt  # 强烈建议使用虚拟环境
-    conda env create -f environment.yml  # 如果采用conda环境
-    ```
-3. 自由选择`UI`界面操作或命令行直接运行，可通过`python ucashelper.py --help`获得参数帮助
-    - UI界面运行
-        ```text
-        python ucashelper.py ui
-        ```
-    - 同步课程资源 
-        ```text
-        python ucashelper.py down
-        ```
-    - 自动评教
-        ```text
-        python ucashelper.py assess
-        ```
-    - 查询成绩
-        ```text
-        python ucashelper.py grade
-        ```
-    - 登录校园网
-        ```text
-        python ucashelper.py login
-        ```
-    - 登出校园网
-        ```text
-        python ucashelper.py logout
-        ```
-    - 爆破账号  
-        ```text
-        python ucashelper.py hack
-        ```
 
 # 6. 问题反馈
 对项目如有任何问题或修改意见，欢迎提交`issue`或者邮件私信给我～
