@@ -24,7 +24,7 @@ WELCOME_MESSAGE = """
 **      #   #  #     #######      #    #  #  #     #     #     #     #  #      **
 **       ###    ### ##     ##  ###     #  #   ###  ##### #      ###  #   #     **
 **                            copyright@GentleCP                               **
-**                            version: 2.0.1                                   **
+**                            version: 2.0.2                                   **
 **                github: https://github.com/GentleCP/UCASHelper               **
 **                            1:course sources download                        **
 **                            2:wifi login                                     **
@@ -48,7 +48,6 @@ class Init:
                  assesser= None,
                  gradeObserver = None,
                  ):
-        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s:[%(message)s]')
         self._logger = logging.getLogger("Init")
         self._welcome_msg = welcome_msg
         self._wifi_loginer = wifiLoginer

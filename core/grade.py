@@ -29,9 +29,9 @@ class GradeObserver(Loginer):
 
     def _get_grade(self):
         try:
-            res = self._S.get(self._urls['grade_url']['http'],timeout=5)
+            res = self._S.get(self._urls['grade_url']['http'],headers=self.headers, timeout=5)
         except requests.Timeout:
-            res = self._S.get(self._urls['grade_url']['https'])
+            res = self._S.get(self._urls['grade_url']['https'],headers=self.headers)
 
         bs4obj = BeautifulSoup(res.text, 'html.parser')
         thead = bs4obj.find('thead')
@@ -48,6 +48,7 @@ class GradeObserver(Loginer):
     def run(self):
         self.login()
         self._get_grade()
+
 
 import settings
 

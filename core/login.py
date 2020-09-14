@@ -28,6 +28,17 @@ class Loginer(object):
         self._S = requests.session()
         self._user_info = user_info
         self._urls = urls
+        self.headers = {
+            'Connection': 'keep-alive',
+            'Accept': '*/*',
+            'Origin': 'http://jwxk.ucas.ac.cn',
+            'X-Requested-With': 'XMLHttpRequest',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Referer': 'http://jwxk.ucas.ac.cn/evaluate/evaluateCourse/165683',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'zh-CN,zh;q=0.9',
+        }
 
     def __keep_session(self):
         try:
@@ -36,23 +47,11 @@ class Loginer(object):
             res = self._S.get(url=self._urls['course_select_url']['https'])
         course_select_url = re.search(r"window.location.href='(?P<course_select_url>.*?)'", res.text).groupdict().get(
             "course_select_url")
-        # print(course_select_url)
-        self._S.get(course_select_url)
+        self._S.get(course_select_url,headers=self.headers)
 
     def login(self):
-        headers = {
-            'Connection': 'keep-alive',
-            'Accept': '*/*',
-            'Origin': 'http://onestop.ucas.ac.cn',
-            'X-Requested-With': 'XMLHttpRequest',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'Referer': 'http://onestop.ucas.ac.cn/',
-            'Accept-Encoding': 'gzip, deflate',
-            'Accept-Language': 'zh-CN,zh;q=0.9',
-        }
         try:
-            res = self._S.post(url=self._urls["login_url"]['http'], data=self._user_info, headers=headers, timeout=5)
+            res = self._S.post(url=self._urls["login_url"]['http'], data=self._user_info, headers=self.headers, timeout=10)
 
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.ConnectTimeout,
@@ -64,13 +63,14 @@ class Loginer(object):
             if res.status_code == 200:
                 json_res = res.json()
             else:
-                res = self._S.post(url=self._urls["login_url"]['https'], data=self._user_info, headers=headers, timeout=5)
+                res = self._S.post(url=self._urls["login_url"]['https'], data=self._user_info, headers=self.headers, timeout=5)
                 json_res = res.json()
 
             if json_res["f"]:
                 self._S.get(res.json()["msg"])
                 self._logger.info("sep登录成功！")
                 self.__keep_session()
+
 
             else:
                 self._logger.error("sep登录失败，请检查settings下的USER_INFO是否正确！")

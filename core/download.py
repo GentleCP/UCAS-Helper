@@ -85,7 +85,7 @@ class Downloader(Loginer):
                     'itemCanRevise': 'false',
                     'sakai_csrf_token': csrf_token
                 }
-                res = self._S.post(source_url, data=data)  # 获取文件夹下资源信息
+                res = self._S.post(source_url, data=data,headers=self.headers)  # 获取文件夹下资源信息
                 bs4obj = BeautifulSoup(res.text, 'html.parser')
                 self._recur_dir(course_info, source_url, bs4obj)
 
@@ -100,16 +100,16 @@ class Downloader(Loginer):
         if not self._l_course_info:
             # 减少后续多次请求课程信息耗时
             try:
-                res = self._S.get(url=self._urls['course_info_url']['http'],timeout=5)
+                res = self._S.get(url=self._urls['course_info_url']['http'], headers=self.headers, timeout=5)
             except requests.Timeout:
-                res = self._S.get(url=self._urls['course_info_url']['https'])
+                res = self._S.get(url=self._urls['course_info_url']['https'], headers=self.headers)
 
             bsobj = BeautifulSoup(res.text, "html.parser")
             refresh_url = bsobj.find("noscript").meta.get("content")[6:]  # 获取新的定向url
-            res = self._S.get(refresh_url)
+            res = self._S.get(refresh_url,headers=self.headers)
             bsobj = BeautifulSoup(res.text, "html.parser")
             new_course_url = bsobj.find('a', {"title": "我的课程 - 查看或加入站点"}).get("href")  # 获取到新的课程信息url
-            res = self._S.get(new_course_url)
+            res = self._S.get(new_course_url,headers=self.headers)
             bsobj = BeautifulSoup(res.text, "html.parser")
             course_list = bsobj.findAll('tr')  # 尚未筛选的杂乱信息
             i = 1
@@ -130,10 +130,10 @@ class Downloader(Loginer):
         '''
         if not self._d_source_info[course_info["name"]]:
             # 该门课的资源信息尚未存储到内存
-            res = self._S.get(course_info["url"])
+            res = self._S.get(course_info["url"],headers=self.headers)
             bs4obj = BeautifulSoup(res.text, "html.parser")
             source_url = bs4obj.find('a', {'title': '资源 - 上传、下载课件，发布文档，网址等信息'}).get("href")
-            res = self._S.get(source_url)   # 获取课程资源页面
+            res = self._S.get(source_url,headers=self.headers)   # 获取课程资源页面
             bs4obj = BeautifulSoup(res.text, "html.parser")
 
             self._recur_dir(course_info,source_url,bs4obj)

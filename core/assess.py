@@ -27,36 +27,24 @@ class Assesser(Loginer):
         super().__init__(user_info, urls)
         self._logger = logging.getLogger("Assesser")
         self._assess_msgs = assess_msgs
-        self.headers =  {
-            'Connection': 'keep-alive',
-            'Accept': '*/*',
-            'Origin': 'http://jwxk.ucas.ac.cn',
-            'X-Requested-With': 'XMLHttpRequest',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'Referer': 'http://jwxk.ucas.ac.cn/evaluate/evaluateCourse/165683',
-            'Accept-Encoding': 'gzip, deflate',
-            'Accept-Language': 'zh-CN,zh;q=0.9',
-        }
         self._id_pattern = re.compile('/evaluate/.*?/(?P<id>.*?)$')
         self._course_assess_url = None  # 动态获取课程评估地址
 
     def _get_course_ids(self):
         # 获取课程评估url
         try:
-            res = self._S.get(url=self._urls['view_url']['http'],timeout=5)
+            res = self._S.get(url=self._urls['view_url']['http'], headers=self.headers, timeout=5)
         except requests.Timeout:
-            res = self._S.get(url=self._urls['view_url']['https'])
-
+            res = self._S.get(url=self._urls['view_url']['https'], headers=self.headers)
         bs4obj = BeautifulSoup(res.text,'html.parser')
         href = bs4obj.find('a',string=re.compile('.*学期$')).get('href')
         self._course_assess_url = self._urls['base_url']['http'] + href
         # 获取课程id
         try:
-            res = self._S.get(self._course_assess_url,timeout=5)
+            res = self._S.get(self._course_assess_url, headers=self.headers, timeout=5)
         except requests.Timeout:
             self._course_assess_url = self._urls['base_url']['https'] + href
-            res = self._S.get(self._course_assess_url)
+            res = self._S.get(self._course_assess_url, headers=self.headers)
 
         bs4obj = BeautifulSoup(res.text, 'html.parser')
         urls = [url.get('href') for url in bs4obj.find_all('a', {'class': 'btn'})]
@@ -67,9 +55,9 @@ class Assesser(Loginer):
 
     def __assess_course(self,course_id):
         try:
-            res = self._S.get(self._urls['base_evaluateCourse_url']['http'] + course_id,timeout=5)
+            res = self._S.get(self._urls['base_evaluateCourse_url']['http'] + course_id, headers=self.headers, timeout=5)
         except requests.Timeout:
-            res = self._S.get(self._urls['base_evaluateCourse_url']['https'] + course_id)
+            res = self._S.get(self._urls['base_evaluateCourse_url']['https'] + course_id, headers=self.headers)
 
         s = res.text.split('?s=')[-1].split('"')[0]
         bs4obj = BeautifulSoup(res.text, 'html.parser')
@@ -127,9 +115,9 @@ class Assesser(Loginer):
 
     def __assess_teacher(self, teacher_id):
         try:
-            res = self._S.get(self._urls['base_evaluateTeacher_url']['http'] + teacher_id,timeout=5)
+            res = self._S.get(self._urls['base_evaluateTeacher_url']['http'] + teacher_id, headers=self.headers, timeout=5)
         except requests.Timeout:
-            res = self._S.get(self._urls['base_evaluateTeacher_url']['https'] + teacher_id)
+            res = self._S.get(self._urls['base_evaluateTeacher_url']['https'] + teacher_id, headers=self.headers)
 
         bs4obj = BeautifulSoup(res.text,'html.parser')
         radios = bs4obj.find_all('input', attrs={'type': 'radio'})

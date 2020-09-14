@@ -1,7 +1,24 @@
 # UCAS Helper
 ![python version](https://img.shields.io/badge/python-3.5%2B-blue)
-![demo version](https://img.shields.io/badge/version-2.0.1-yellowgreen)
-
+![demo version](https://img.shields.io/badge/version-2.0.2-yellowgreen)
+```angular2
+*********************************************************************************
+**      #   #   ###     #       ###    #  #   ###  #     ###    ###  ####      **
+**      #   #  #       # #     #       #  #  #     #     #  #  #     #   #     **
+**      #   #  #      #   #    ####    ####  ###   #     ###   ###   ####      **
+**      #   #  #     #######      #    #  #  #     #     #     #     #  #      **
+**       ###    ### ##     ##  ###     #  #   ###  ##### #      ###  #   #     **
+**                            copyright@GentleCP                               **
+**                            version: 2.0.2                                   **
+**                github: https://github.com/GentleCP/UCASHelper               **
+**                            1:course sources download                        **
+**                            2:wifi login                                     **
+**                            3:wifi logout                                    **
+**                            4:course assess                                  **
+**                            5:query grades                                   **
+**                            q:exit                                           **
+*********************************************************************************
+```
 目录
 =================
 
@@ -74,7 +91,7 @@
 ![](img/1.7.0.png)
 
 # 2. 更新日志
-
+- [2.0.2] 修复了因课程网站选课系统添加头部检查导致的**课程评估，分数查询**功能的失效。
 - [2.0.1] 对整体代码进行了重构，解决因课程网站`http`,`https`协议切换导致的访问出错问题，
 同时更改了项目接口，方便小白和专业人士操作。以前均通过可视化`UI`界面进行操作，现在用户可选择`UI`和命令行两种模式，具体见**5.部署使用**。
 对各个功能测试结果如下：
