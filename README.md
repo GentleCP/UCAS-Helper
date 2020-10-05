@@ -1,6 +1,6 @@
 # UCAS Helper
 ![python version](https://img.shields.io/badge/python-3.5%2B-blue)
-![demo version](https://img.shields.io/badge/version-2.0.2-yellowgreen)
+![demo version](https://img.shields.io/badge/version-2.0.3-yellowgreen)
 ```angular2
 *********************************************************************************
 **      #   #   ###     #       ###    #  #   ###  #     ###    ###  ####      **
@@ -9,7 +9,7 @@
 **      #   #  #     #######      #    #  #  #     #     #     #     #  #      **
 **       ###    ### ##     ##  ###     #  #   ###  ##### #      ###  #   #     **
 **                            copyright@GentleCP                               **
-**                            version: 2.0.2                                   **
+**                            version: 2.0.3                                   **
 **                github: https://github.com/GentleCP/UCASHelper               **
 **                            1:course sources download                        **
 **                            2:wifi login                                     **
@@ -44,7 +44,7 @@
 原本只是一时兴起，为了方便写的UCAS课程网站小助手，帮助我自己进行课程资源快速同步。
 没想到后面随着功能的增加，项目也变得小有规模起来，因此将其开放给全体UCAS同学，小助手的使用方式在下面有介绍，
 十分简便（需要一点对`python`环境的了解，百度`python`的安装即可），如果你觉得本项目对你有所帮助的话，
-希望你能帮我点个star，算是对作者的一点激励吧～
+希望你能帮我点个star，算是对作者的一点激励吧～ 感谢每一个为项目点上`star`，让更多人看到这个项目的人。❤️
 
 > 注意：由于课程网站的变动可能引发脚本失效，在失效后，我会尽量及时修复bug，并更新版本到github，
 建议star项目方便接收更新消息，或者在失效时查看本项目[github链接](https://github.com/GentleCP/UCASHelper)。
@@ -92,6 +92,8 @@
 ![](img/1.7.0.png)
 
 # 2. 更新日志
+- [2.0.3] 修复了部分课程因html解析不当导致的课程资源无法下载的情况，本次更新需要用到新的依赖包`lxml=4.5.2`，
+已安装老版本的请重新执行`pip install -r requirements.txt`
 - [2.0.2] 修复了因课程网站选课系统添加头部检查导致的**课程评估，分数查询**功能的失效。
 - [2.0.1] 对整体代码进行了重构，解决因课程网站`http`,`https`协议切换导致的访问出错问题，
 同时更改了项目接口，方便小白和专业人士操作。以前均通过可视化`UI`界面进行操作，现在用户可选择`UI`和命令行两种模式，具体见**5.部署使用**。
@@ -273,4 +275,3 @@ python ucashelper.py assess # 自动评教，评教内容在settings.py中设置
 如果你发现了问题，并自己解决修复了，希望你能提交PR，作为贡献者帮助完善这个项目，毕竟一个人的能力是有限的，
 无法面面俱到。  
 
-最后，感谢每一个为项目点上`star`，让更多人看到这个项目的人。❤️

@@ -22,6 +22,8 @@ from bs4 import BeautifulSoup
 from core.login import Loginer
 from core.utils import download_file
 
+from pprint import pprint
+
 class Downloader(Loginer):
     def __init__(self, user_info, urls, source_dir,filter_list):
         super().__init__(user_info, urls)
@@ -86,6 +88,7 @@ class Downloader(Loginer):
                     'sakai_csrf_token': csrf_token
                 }
                 res = self._S.post(source_url, data=data,headers=self.headers)  # 获取文件夹下资源信息
+                print(res.text)
                 bs4obj = BeautifulSoup(res.text, 'html.parser')
                 self._recur_dir(course_info, source_url, bs4obj)
 
@@ -134,8 +137,7 @@ class Downloader(Loginer):
             bs4obj = BeautifulSoup(res.text, "html.parser")
             source_url = bs4obj.find('a', {'title': '资源 - 上传、下载课件，发布文档，网址等信息'}).get("href")
             res = self._S.get(source_url,headers=self.headers)   # 获取课程资源页面
-            bs4obj = BeautifulSoup(res.text, "html.parser")
-
+            bs4obj = BeautifulSoup(res.text, "lxml")
             self._recur_dir(course_info,source_url,bs4obj)
 
 
