@@ -1,6 +1,7 @@
 # UCAS Helper
 ![python version](https://img.shields.io/badge/python-3.5%2B-blue)
 ![demo version](https://img.shields.io/badge/version-2.0.3-yellowgreen)
+![license](https://img.shields.io/badge/license-GNU%20v3-yellowgreen)
 ```angular2
 *********************************************************************************
 **      #   #   ###     #       ###    #  #   ###  #     ###    ###  ####      **
