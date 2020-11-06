@@ -24,7 +24,7 @@ WELCOME_MESSAGE = """
 **      #   #  #     #######      #    #  #  #     #     #     #     #  #      **
 **       ###    ### ##     ##  ###     #  #   ###  ##### #      ###  #   #     **
 **                            copyright@GentleCP                               **
-**                            version: 2.0.3                                   **
+**                            version: 2.0.4                                   **
 **                github: https://github.com/GentleCP/UCASHelper               **
 **                            1:course sources download                        **
 **                            2:wifi login                                     **

@@ -105,7 +105,7 @@ class Assesser(Loginer):
     def _get_teacher_ids(self):
         # 通过课程评估url得到教师评估url
         teacher_assess_url = self._course_assess_url.replace('course','teacher')
-        res = self._S.get(teacher_assess_url)
+        res = self._S.get(teacher_assess_url, headers=self.headers)
         bs4obj = BeautifulSoup(res.text, 'html.parser')
         urls = [url.get('href') for url in bs4obj.find_all('a', {'class': 'btn'})]
         teacher_ids = []
@@ -119,7 +119,7 @@ class Assesser(Loginer):
         except requests.Timeout:
             res = self._S.get(self._urls['base_evaluateTeacher_url']['https'] + teacher_id, headers=self.headers)
 
-        bs4obj = BeautifulSoup(res.text,'html.parser')
+        bs4obj = BeautifulSoup(res.text,'lxml')
         radios = bs4obj.find_all('input', attrs={'type': 'radio'})
         value = radios[0]['value']  # 默认全5星好评
         data = {}
@@ -132,12 +132,16 @@ class Assesser(Loginer):
             data[item_id] = asses_msg
         data['subjectiveCheckbox'] = ''
         data['subjectiveRadio'] = ''
+        post_action = bs4obj.find('form', {'id': 'regfrm'})
         try:
-            post_url = self._urls['base_url']['http'] + bs4obj.find('form', {'id': 'regfrm'},timeout=5).get('action')
-            res = self._S.post(post_url,data=data,headers = self.headers,timeout=5)
+            post_url = self._urls['base_url']['http'] + post_action.get('action')
         except requests.Timeout:
-            post_url = self._urls['base_url']['https'] + bs4obj.find('form', {'id': 'regfrm'}).get('action')
+            post_url = self._urls['base_url']['https'] + post_action.get('action')
+        try:
+            res = self._S.post(post_url, data=data, headers=self.headers, timeout=5)
+        except requests.Timeout:
             res = self._S.post(post_url, data=data, headers=self.headers)
+
         tmp = BeautifulSoup(res.text, 'html.parser')
         try:
             flag = tmp.find('label', attrs={'id': 'loginSuccess'})

@@ -42,9 +42,9 @@ class Loginer(object):
 
     def __keep_session(self):
         try:
-            res = self._S.get(url=self._urls['course_select_url']['http'],timeout=5)
+            res = self._S.get(url=self._urls['course_select_url']['http'], headers = self.headers, timeout=5)
         except requests.Timeout:
-            res = self._S.get(url=self._urls['course_select_url']['https'])
+            res = self._S.get(url=self._urls['course_select_url']['https'], headers = self.headers)
         course_select_url = re.search(r"window.location.href='(?P<course_select_url>.*?)'", res.text).groupdict().get(
             "course_select_url")
         self._S.get(course_select_url,headers=self.headers)
@@ -67,7 +67,7 @@ class Loginer(object):
                 json_res = res.json()
 
             if json_res["f"]:
-                self._S.get(res.json()["msg"])
+                self._S.get(res.json()["msg"], headers=self.headers)
                 self._logger.info("sep登录成功！")
                 self.__keep_session()
 
