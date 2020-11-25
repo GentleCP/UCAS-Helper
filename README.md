@@ -39,6 +39,7 @@
          * [5.2.2 手动部署](#522-手动部署)
       * [5.3 修改配置](#53-修改配置)
       * [5.4 运行项目](#54-运行项目)
+      * [5.5 更新项目](#55-更新项目)
    * [6. 问题反馈](#6-问题反馈)
 
 # 前言
@@ -153,40 +154,25 @@
 
 
 ## 5.2 部署项目
-提供两种部署使用方法：`自动化部署`(懒人推荐)和`手动部署`，前者在`windows`环境下要求安装`git`，采用`git`提供的终端（需要用到`shell`命令，`windows`cmd不支持）
+提供两种部署使用方法：`自动化部署`(懒人推荐)和`手动部署`，前者在`windows`环境下要求安装`git`，采用`git`提供的终端（需要用到`shell`命令，`windows`cmd不支持）。
+> 注意：推荐采用`git clone`的方式部署项目到本地，这样在后续有更新的时候可以直接通过git命令更新项目
 
 ### 5.2.1 自动部署
 > 注意：如果选择采用虚拟环境，请确保`mkvirtualenv`命令可用。
-- 采用虚拟环境（推荐） 
-    - `pip`:多为`windows`用户,进入`git`提供的`bash`终端
-        ```text
-        wget https://github.com/GentleCP/UCASHelper/archive/master.zip && unzip master.zip && cd UCASHelper-master;mkvirtualenv ucashelper && pip install -r requirements.txt         
-        ```
-    - `pip3`:`mac`,`linux`用户
-        ```text
-        wget https://github.com/GentleCP/UCASHelper/archive/master.zip && unzip master.zip && cd UCASHelper-master;mkvirtualenv ucashelper && pip3 install -r requirements.txt
-        ```
-- 不采用虚拟环境 
-    - `pip`
-        ```text
-        wget https://github.com/GentleCP/UCASHelper/archive/master.zip && unzip master.zip && cd UCASHelper-master && pip install -r requirements.txt         
-        ```
-    - `pip3`
-        ```text
-        wget https://github.com/GentleCP/UCASHelper/archive/master.zip && unzip master.zip && cd UCASHelper-master && pip3 install -r requirements.txt
-        ```
-### 5.2.2 手动部署
-1. 克隆本项目到本地（需要`git`）或下载源代码压缩包或下载`realease`版本代码(推荐)  
+
+- 已安装`git`,在`git bash`终端执行  
     ```text
-    git clone https://github.com/GentleCP/UCASHelper.git
+    git clone https://github.com/GentleCP/UCAS-Helper.git  && cd UCAS-Helper && pip install -r requirements.txt   
     ```
-    
+    > 如果使用`pip3`，自行替换`pip`
+
+### 5.2.2 手动部署
+1. 下载源代码压缩包或下载`realease`版本代码(推荐) 并解压 
 2. 进入项目目录安装依赖包
     ```text
     pip install -r requirements.txt  # 强烈建议使用虚拟环境
     conda env create -f environment.yml  # 如果采用conda环境
     ```
-
 
 ## 5.3 修改配置
 根据需求修改配置文件:`settings.py`,`accounts.json`
@@ -218,7 +204,6 @@
         每个账号一个，允许存储多个账号，当遇到一个账号流量不够的时候自动切换到下一个账号登录
 
 
-
 ## 5.4 运行项目
 
 当确认配置信息修改完毕后，可以在终端或cmd下通过执行`python ucashelper.py ui`来启动小白操作窗口，同时也可以根据需要直接在命令行传入不同参数执行相应的操作，具体如下：
@@ -233,6 +218,16 @@ python ucashelper.py hack # 破解wifi账号
 python ucashelper.py login # 登录校园网，确保在校园网环境下未登录情况执行
 python ucashelper.py logout # 登出校园网
 python ucashelper.py assess # 自动评教，评教内容在settings.py中设置
+```
+
+## 5.5 更新项目
+由于课程站点的变更，可能导致部分功能失效无法使用，待作者修复后，需要更新最新的版本代码到本地，现在提供自动化一条命令更新项目的方式。
+
+> 需通过git方式部署，若直接下载源代码或`realease`压缩包，则需上github下载最新版本代码
+
+在`UCAS-Helper`项目根目录下执行以下命令
+```
+git stash && git fetch --all && git merge && git stash pop
 ```
 
 # 6. 问题反馈
