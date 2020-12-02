@@ -17,6 +17,8 @@ import re
 import requests
 import settings
 import json
+import warnings
+warnings.filterwarnings('ignore')
 
 from core.exception import HttpError
 
@@ -28,15 +30,20 @@ class Loginer(object):
         self._S = requests.session()
         self._user_info = user_info
         self._urls = urls
+
         self.headers = {
             'Connection': 'keep-alive',
+            'sec-ch-ua': '"Google Chrome";v="87", "\\"Not;A\\\\Brand";v="99", "Chromium";v="87"',
             'Accept': '*/*',
-            'Origin': 'http://jwxk.ucas.ac.cn',
             'X-Requested-With': 'XMLHttpRequest',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+            'sec-ch-ua-mobile': '?0',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'Referer': 'http://jwxk.ucas.ac.cn/evaluate/evaluateCourse/165683',
-            'Accept-Encoding': 'gzip, deflate',
+            'Origin': 'https://onestop.ucas.ac.cn',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Dest': 'empty',
+            'Referer': 'https://onestop.ucas.ac.cn/',
             'Accept-Language': 'zh-CN,zh;q=0.9',
         }
 
@@ -50,31 +57,32 @@ class Loginer(object):
         self._S.get(course_select_url,headers=self.headers)
 
     def login(self):
+        self._S.get(url="https://onestop.ucas.ac.cn/", headers=self.headers, verify=False)  # 获取identity
+        res = None
         try:
-            res = self._S.post(url=self._urls["login_url"]['http'], data=self._user_info, headers=self.headers, timeout=10)
-
+            res = self._S.post(url=self._urls["login_url"]['https'], data=self._user_info, headers=self.headers, timeout=10)
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ReadTimeout):
             self._logger.error("网络连接失败，请确认你的网络环境后重试！")
             exit(400)
 
+        try:
+            json_res = res.json()
+        except json.decoder.JSONDecodeError:
+            self._logger.info("站点https证书失效，更换到http请求")
+            res = self._S.post(url=self._urls["login_url"]['http'], data=self._user_info, headers=self.headers,timeout=5)
+            json_res = res.json()
+
+        if json_res["f"]:
+            self._S.get(res.json()["msg"], headers=self.headers)
+            self._logger.info("sep登录成功！")
+            self.__keep_session()
+
+
         else:
-            if res.status_code == 200:
-                json_res = res.json()
-            else:
-                res = self._S.post(url=self._urls["login_url"]['https'], data=self._user_info, headers=self.headers, timeout=5)
-                json_res = res.json()
-
-            if json_res["f"]:
-                self._S.get(res.json()["msg"], headers=self.headers)
-                self._logger.info("sep登录成功！")
-                self.__keep_session()
-
-
-            else:
-                self._logger.error("sep登录失败，请检查settings下的USER_INFO是否正确！")
-                exit(401)
+            self._logger.error("sep登录失败，请检查settings下的USER_INFO是否正确！")
+            exit(401)
 
 
 if __name__ == '__main__':

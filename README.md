@@ -1,6 +1,6 @@
 # UCAS Helper
 ![python version](https://img.shields.io/badge/python-3.5%2B-blue)
-![demo version](https://img.shields.io/badge/version-2.0.4-brightgreen)
+![demo version](https://img.shields.io/badge/version-2.0.5-brightgreen)
 ![license](https://img.shields.io/badge/license-GNU%20v3-yellowgreen)
 ```angular2
 *********************************************************************************
@@ -10,7 +10,7 @@
 **      #   #  #     #######      #    #  #  #     #     #     #     #  #      **
 **       ###    ### ##     ##  ###     #  #   ###  ##### #      ###  #   #     **
 **                            copyright@GentleCP                               **
-**                            version: 2.0.4                                   **
+**                            version: 2.0.5                                   **
 **                github: https://github.com/GentleCP/UCASHelper               **
 **                            1:course sources download                        **
 **                            2:wifi login                                     **
@@ -80,6 +80,7 @@
 ![](img/1.7.0.png)
 
 # 2. 更新日志
+- [2.0.5] 修复登陆接口请求失败的问题,建议使用最新的更新方式，见[5.5 更新项目](#55-更新项目)
 - [2.0.4] 修复评估教师失败的bug
 - [2.0.3] 修复了部分课程因html解析不当导致的课程资源无法下载的情况，本次更新需要用到新的依赖包`lxml=4.5.2`，
 已安装老版本的请重新执行`pip install -r requirements.txt`
