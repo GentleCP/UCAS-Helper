@@ -37,9 +37,9 @@ class Downloader(Loginer):
         self._cur_course_info = None
         self._collection_id_pattern = re.compile("value='(?P<collection_id>.*?)';")  # 获取collection id 信息正则
         self._dir_pattern = re.compile("value='/group/[0-9]*/(?P<dir>.*?)';")   # 获取文件夹目录信息正则
-        self.__check_dir(self._source_dir)
 
-    def __check_dir(self, dir):
+
+    def _check_dir(self, dir):
         if not os.path.exists(dir):
             try:
                 os.mkdir(dir)
@@ -348,6 +348,7 @@ class Downloader(Loginer):
                     break
 
     def run(self):
+        self._check_dir(self._source_dir)
         self.login()
         self._set_course_info()  # 添加所有课程信息到内存中
         self._cmd()  # 进入交互界面

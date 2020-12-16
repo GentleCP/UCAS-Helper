@@ -67,3 +67,6 @@ venv.bak/
 
 .idea
 *.un~
+
+last_update_time*
+accounts*

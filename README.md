@@ -1,6 +1,6 @@
 # UCAS Helper
 ![python version](https://img.shields.io/badge/python-3.5%2B-blue)
-![demo version](https://img.shields.io/badge/version-2.0.5-brightgreen)
+![demo version](https://img.shields.io/badge/version-2.1.1-brightgreen)
 ![license](https://img.shields.io/badge/license-GNU%20v3-yellowgreen)
 ```angular2
 *********************************************************************************
@@ -10,7 +10,7 @@
 **      #   #  #     #######      #    #  #  #     #     #     #     #  #      **
 **       ###    ### ##     ##  ###     #  #   ###  ##### #      ###  #   #     **
 **                            copyright@GentleCP                               **
-**                            version: 2.0.5                                   **
+**                            version: 2.1.1                                   **
 **                github: https://github.com/GentleCP/UCASHelper               **
 **                            1:course sources download                        **
 **                            2:wifi login                                     **
@@ -80,6 +80,9 @@
 ![](img/1.7.0.png)
 
 # 2. 更新日志
+- [2.1.1] 本次做了两个主要改动：
+    1. 添加了自动更新的功能，在每次程序启动的时候检测github上的最新代码，若有更新，则同步更新，具体见[5.5 更新项目](#55-更新项目)
+    2. 修改了资源存储位置检测的顺序，放到了程序主界面启动之后，这样可以避免只想使用其他功能的朋友被强制要求设定资源下载路径
 - [2.0.5] 修复登陆接口请求失败的问题,建议使用最新的更新方式，见[5.5 更新项目](#55-更新项目)
 - [2.0.4] 修复评估教师失败的bug
 - [2.0.3] 修复了部分课程因html解析不当导致的课程资源无法下载的情况，本次更新需要用到新的依赖包`lxml=4.5.2`，
@@ -222,6 +225,10 @@ python ucashelper.py assess # 自动评教，评教内容在settings.py中设置
 ```
 
 ## 5.5 更新项目
+- 现已支持程序启动时自动进行更新检查，在有更新的时候自动更新，不需要用户手动进行更新操作，如果你不希望每次都进行更新检查，可进入`settings.py`中设置`ALLOW_AUTO_UPDATE=False`  
+    > 注意：由于自动更新依赖git，所以如果是通过`release`版本下载的代码无法使用自动更新功能，因此，本次也是最后一次发布`release`版本，后续更新都将采用此更新方式，如果你只想临时使用，不期待后续更新，可选择下载最新代码。
+
+
 由于课程站点的变更，可能导致部分功能失效无法使用，待作者修复后，需要更新最新的版本代码到本地，现在提供自动化一条命令更新项目的方式。
 
 > 需通过git方式部署，若直接下载源代码或`realease`压缩包，则需上github下载最新版本代码

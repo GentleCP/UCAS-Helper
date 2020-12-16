@@ -13,6 +13,7 @@ USER_INFO = {
     'remember': 'undefined'  # 此处不要动
 }
 SOURCE_DIR = ''
+ALLOW_AUTO_UPDATE = True
 
 # ------------------后面的不要动--------------#
 
