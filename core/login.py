@@ -20,9 +20,6 @@ import json
 import warnings
 warnings.filterwarnings('ignore')
 
-from core.exception import HttpError
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s:[%(message)s]')
 
 class Loginer(object):
     def __init__(self, user_info, urls):

@@ -20,9 +20,8 @@ import requests
 
 from bs4 import BeautifulSoup
 from core.login import Loginer
-from core.utils import download_file
+from util.functions import download_file
 
-from pprint import pprint
 
 class Downloader(Loginer):
     def __init__(self, user_info, urls, source_dir,filter_list):
@@ -88,7 +87,6 @@ class Downloader(Loginer):
                     'sakai_csrf_token': csrf_token
                 }
                 res = self._S.post(source_url, data=data,headers=self.headers)  # 获取文件夹下资源信息
-                print(res.text)
                 bs4obj = BeautifulSoup(res.text, 'html.parser')
                 self._recur_dir(course_info, source_url, bs4obj)
 
@@ -182,9 +180,6 @@ class Downloader(Loginer):
         if not os.path.isfile(file_path):
             # 只下载没有的文件，若存在不下载，节省流量
             self._logger.info("正在下载:{}".format(source_info['name']))
-            # content = self._S.get(source_info['url']).content
-            # with open(file_path, 'wb') as f:
-            #     f.write(content)
             download_file(url=source_info['url'], session=self._S, file_path=file_path)
             self._update_sources.append("[{}:{}]".format(course_info["name"], source_info['name']))  # 记录更新的课程数据
 

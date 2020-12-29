@@ -9,9 +9,35 @@ import json
 import time
 import datetime
 import requests
-from core.utils import login_wifi
+from urllib.parse import urlparse
 
 from core.exception import WifiError
+
+def login_wifi(stuid,password):
+    try:
+        query_string = urlparse(requests.get("http://210.77.16.21").url).query
+        payload = {
+            "userId": stuid,
+            "password": password,
+            "service": "",
+            "queryString": query_string,
+            "operatorPwd": '',
+            "operatorUserId": '',
+            "validcode": '',
+        }
+        res = requests.post("http://210.77.16.21/eportal/InterFace.do?method=login", data=payload)
+        res.encoding = 'u8'
+    except (requests.exceptions.ConnectionError,
+            requests.exceptions.ConnectTimeout,
+            requests.exceptions.ReadTimeout):
+        return None
+    else:
+        return {
+            'result':res.json().get("result"),
+            'msg':res.json().get("message"),
+            'query_string':query_string
+        }
+
 
 class AccHacker(object):
     def __init__(self, data_path='data/data.txt',

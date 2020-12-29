@@ -26,7 +26,7 @@ WELCOME_MESSAGE = """
 **      #   #  #     #######      #    #  #  #     #     #     #     #  #      **
 **       ###    ### ##     ##  ###     #  #   ###  ##### #      ###  #   #     **
 **                            copyright@GentleCP                               **
-**                            version: 2.1.1                                   **
+**                            version: {tag}                                   **
 **                github: https://github.com/GentleCP/UCASHelper               **
 **                            1:course sources download                        **
 **                            2:wifi login                                     **
@@ -35,7 +35,7 @@ WELCOME_MESSAGE = """
 **                            5:query grades                                   **
 **                            q:exit                                           **
 *********************************************************************************
-"""
+""".format(tag=settings.__version__)
 
 
 class Init(object):

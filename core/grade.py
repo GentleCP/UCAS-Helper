@@ -13,6 +13,7 @@
 --------------------------------------------
 """
 import requests
+import logging
 from bs4 import BeautifulSoup
 from prettytable import PrettyTable
 
@@ -25,7 +26,7 @@ class GradeObserver(Loginer):
 
     def __init__(self, user_info, urls):
         super().__init__(user_info, urls)
-        pass
+        self._logger = logging.getLogger('GradeObserver')
 
     def _get_grade(self):
         try:
