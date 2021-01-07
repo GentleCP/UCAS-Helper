@@ -39,10 +39,14 @@ FILTER_LIST = [
 
 # ------------------后面的不要动--------------#
 
-__version__ = '2.1.2'
+__version__ = '2.2.0'
 
 ACCOUNTS_PATH = 'accounts.json'
 URLS = {
+    'home_url':{
+        'http':'http://onestop.ucas.ac.cn/',
+        'https':'https://onestop.ucas.ac.cn/'
+    },
     'base_url':{
         'http':'http://jwxk.ucas.ac.cn',
         'https':'https://jwxk.ucas.ac.cn',

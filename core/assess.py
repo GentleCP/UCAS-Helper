@@ -12,7 +12,6 @@
 
 --------------------------------------------
 """
-import logging
 import re
 import time
 import requests
@@ -20,15 +19,17 @@ import requests
 from bs4 import BeautifulSoup
 
 from core.login import Loginer
+from handler.logger import LogHandler
 
 class Assesser(Loginer):
 
     def __init__(self, user_info, urls,assess_msgs):
         super().__init__(user_info, urls)
-        self._logger = logging.getLogger("Assesser")
+        self._logger = LogHandler('Assesser')
         self._assess_msgs = assess_msgs
         self._id_pattern = re.compile('/evaluate/.*?/(?P<id>.*?)$')
         self._course_assess_url = None  # 动态获取课程评估地址
+
 
     def _get_course_ids(self):
         # 获取课程评估url
@@ -52,6 +53,7 @@ class Assesser(Loginer):
         for url in urls:
             course_ids.append(self._id_pattern.search(url).groupdict()['id'])
         return course_ids
+
 
     def __assess_course(self,course_id):
         try:
@@ -93,6 +95,7 @@ class Assesser(Loginer):
         except AttributeError:
             print('\033[1;45m{}评估结果：[fail]，尝试重新评估 \033[0m'.format(course_id))
             self.__assess_course(course_id)
+
 
     def _assess_courses(self, course_ids):
         self._logger.info('开始评估课程')
@@ -155,11 +158,13 @@ class Assesser(Loginer):
             print('\033[1;45m{}评估结果：[fail]，尝试重新评估 \033[0m'.format(teacher_id))
             self.__assess_teacher(teacher_id)
 
+
     def _assess_teachers(self, teacher_ids):
         self._logger.info('开始评估教师')
         for teacher_id in teacher_ids:
             self.__assess_teacher(teacher_id)
         self._logger.info('教师评估完毕')
+
 
     def run(self):
         self.login()

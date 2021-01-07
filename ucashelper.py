@@ -5,11 +5,9 @@
 # @Time    : 2019/11/28/028 13:58
 # @WebSite : https://www.gentlecp.com
 
-import sys
 import click
-import logging
 
-from core import ui
+from handler import ui
 from core.wifi import AccHacker
 from core.assess import Assesser
 from core.grade import GradeObserver
@@ -22,8 +20,7 @@ import settings
 @click.group()
 def start():
     """UCASHelper is a useful tool for UCASer, following are the arguments that you could choose"""
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(lineno)d:[%(message)s]')
+
 
 @click.command(name='ui',help='Get UI interface of UCASHelper')
 def UI():

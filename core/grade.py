@@ -18,6 +18,7 @@ from bs4 import BeautifulSoup
 from prettytable import PrettyTable
 
 from core.login import Loginer
+from handler.logger import LogHandler
 
 class GradeObserver(Loginer):
     """
@@ -26,9 +27,9 @@ class GradeObserver(Loginer):
 
     def __init__(self, user_info, urls):
         super().__init__(user_info, urls)
-        self._logger = logging.getLogger('GradeObserver')
+        self._logger = LogHandler('GradeObserver')
 
-    def _get_grade(self):
+    def _show_grade(self):
         try:
             res = self._S.get(self._urls['grade_url']['http'],headers=self.headers, timeout=5)
         except requests.Timeout:
@@ -48,7 +49,7 @@ class GradeObserver(Loginer):
 
     def run(self):
         self.login()
-        self._get_grade()
+        self._show_grade()
 
 
 import settings

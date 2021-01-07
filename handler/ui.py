@@ -13,8 +13,9 @@ import os
 from core.assess import Assesser
 from core.grade import GradeObserver
 from core.download import Downloader
-from core.exception import BackToMain
+from handler.exception import BackToMain
 from core.wifi import WifiLoginer,WifiError
+from handler.logger import LogHandler
 
 import settings
 
@@ -44,7 +45,7 @@ class Init(object):
     """
 
     def __init__(self, welcome_msg):
-        self._logger = logging.getLogger("Init")
+        self._logger = LogHandler("Init")
         self._welcome_msg = welcome_msg
 
         self._wifiLoginer = WifiLoginer(accounts_path=settings.ACCOUNTS_PATH)
@@ -127,13 +128,16 @@ class Init(object):
         if settings.ALLOW_AUTO_UPDATE and self._check_update():
             # do update
             self._logger.info("Available updates detected, start updating...")
-            os.system("git stash && git fetch --all && git merge && git stash pop")
-            self._logger.info("Update compelte.")
+            try:
+                os.system("git stash && git fetch --all && git merge && git stash pop")
+            except KeyboardInterrupt:
+                self._logger.error("Update Interrupt.")
+            else:
+                self._logger.info("Update compelte.")
         self._cmd()
 
 
 def main():
-
     init = Init(WELCOME_MESSAGE)
     init.run()
 

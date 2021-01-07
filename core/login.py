@@ -12,18 +12,22 @@
 
 --------------------------------------------
 """
-import logging
 import re
 import requests
 import settings
 import json
 import warnings
+
+
+from handler.logger import LogHandler
+from handler.exception import ExitStatus
+
 warnings.filterwarnings('ignore')
 
 
 class Loginer(object):
     def __init__(self, user_info, urls):
-        self._logger = logging.getLogger("Loginer")
+        self._logger = LogHandler("Loginer")
         self._S = requests.session()
         self._user_info = user_info
         self._urls = urls
@@ -53,8 +57,9 @@ class Loginer(object):
             "course_select_url")
         self._S.get(course_select_url,headers=self.headers)
 
+
     def login(self):
-        self._S.get(url="https://onestop.ucas.ac.cn/", headers=self.headers, verify=False)  # 获取identity
+        self._S.get(url=self._urls['home_url']['https'], headers=self.headers, verify=False)  # 获取identity
         res = None
         try:
             res = self._S.post(url=self._urls["login_url"]['https'], data=self._user_info, headers=self.headers, timeout=10)
@@ -62,7 +67,7 @@ class Loginer(object):
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ReadTimeout):
             self._logger.error("网络连接失败，请确认你的网络环境后重试！")
-            exit(400)
+            exit(ExitStatus.NETWORK_ERROR)
 
         try:
             json_res = res.json()
@@ -79,7 +84,7 @@ class Loginer(object):
 
         else:
             self._logger.error("sep登录失败，请检查settings下的USER_INFO是否正确！")
-            exit(401)
+            exit(ExitStatus.CONFIG_ERROR)
 
 
 if __name__ == '__main__':

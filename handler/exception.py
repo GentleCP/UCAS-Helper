@@ -12,7 +12,13 @@
 
 --------------------------------------------
 """
+from enum import IntEnum
 
+class ExitStatus(IntEnum):
+
+    OK = 200
+    CONFIG_ERROR = 401
+    NETWORK_ERROR = 404
 
 class BackToMain(Exception):
     pass

@@ -13,6 +13,7 @@
 
 import requests
 import os
+import sys
 import logging
 from tqdm import tqdm
 
@@ -48,3 +49,40 @@ def download_file(url, session=None, file_path='未命名文件', overwrite = Fa
     else:
         logging.error('download fail.')
         return False
+
+
+def check_dir(dir):
+    if not os.path.exists(dir):
+        try:
+            os.mkdir(dir)
+            return False
+        except FileNotFoundError:
+            return True
+
+
+def recur_mkdir(course_dir, dirs):
+    '''
+    递归检查目录是否存在，若不存在则创建
+    :param dirs:
+    :return:
+    '''
+    rec_dir = course_dir  # 递归查询的目录
+    while dirs:
+        rec_dir = rec_dir + '/' + dirs[0]
+        if not os.path.exists(rec_dir):
+            os.mkdir(rec_dir)
+        del dirs[0]
+
+
+def open_dir(dir):
+    '''
+    打开指定目录窗口
+    :return:
+    '''
+    if sys.platform.startswith('win'):
+        result = os.system('start ' + dir)
+    elif sys.platform.startswith('linux'):
+        result = os.system('nautilus ' + dir)
+    else:
+        result = os.system('open ' + dir)
+    return result
