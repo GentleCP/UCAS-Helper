@@ -69,4 +69,4 @@ venv.bak/
 *.un~
 
 accounts*
-
+*.ini
