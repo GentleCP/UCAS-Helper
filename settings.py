@@ -6,17 +6,23 @@
 # @WebSite : https://www.gentlecp.com
 
 
+# Note：用户信息与课程资源存储目录配置未来会转移到conf/user_config.ini中，建议更改
+#-----------------------------------------------------------
 # 填写你自己的用户信息
 USER_INFO = {
     'username': '',
     'password': '',
-    'remember': 'undefined'  # 此处不要动
+    'remember': 'checked'  # 此处不要动
 }
 
 # 课程资源存储目录，如 D:/ucas-resources
 SOURCE_DIR = ''
-# 是否自动更新
-ALLOW_AUTO_UPDATE = True
+
+#-----------------------------------------------------------
+
+
+#------------------------由用户决定的配置信息-----------------------------------
+ALLOW_AUTO_UPDATE = True    # 是否自动更新,开启后会在程序每次启动时检测github最新代码，并自动进行同步
 
 # 根据你个人喜好修改评估的内容
 ASSESS_MSG = [
@@ -35,13 +41,21 @@ FILTER_LIST = [
     '没啥卵用课-1 19-20春季',
     '有点卵用课-2 19-20春季',
 ]
+#------------------------由用户决定的配置信息-----------------------------------
 
 
-# ------------------后面的不要动--------------#
 
-__version__ = '2.2.0'
+# ------------------后面的不要随意更改--------------
 
+__version__ = '2.3.0'
+
+
+# PATH info
+USER_CONFIG_PATH = 'conf/user_config.ini'
+RECORD_PATH = 'conf/record.ini'  # 保存一些程序运行完毕后需要持久化存储到本地的信息
 ACCOUNTS_PATH = 'accounts.json'
+
+# USLs that used for request
 URLS = {
     'home_url':{
         'http':'http://onestop.ucas.ac.cn/',

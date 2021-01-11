@@ -16,6 +16,9 @@ import os
 import sys
 import logging
 from tqdm import tqdm
+from configparser import ConfigParser
+
+from handler.exception import ConfigReadError
 
 
 def download_file(url, session=None, file_path='未命名文件', overwrite = False):
@@ -86,3 +89,14 @@ def open_dir(dir):
     else:
         result = os.system('open ' + dir)
     return result
+
+
+def get_cfg(config_path):
+    '''
+    基于给定的配置路径生成ConfigParser
+    :param config_path:
+    :return: cfg
+    '''
+    cfg = ConfigParser()
+    cfg.read(config_path, encoding='utf-8')
+    return cfg

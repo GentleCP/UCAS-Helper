@@ -23,10 +23,15 @@ from handler.logger import LogHandler
 
 class Assesser(Loginer):
 
-    def __init__(self, user_info, urls,assess_msgs):
-        super().__init__(user_info, urls)
+    def __init__(self,
+                 urls=None,
+                 user_config_path='../conf/user_config.ini',
+                 assess_msgs=[],
+                 *args, **kwargs):
+        super().__init__(urls, user_config_path, *args, **kwargs)
         self._logger = LogHandler('Assesser')
         self._assess_msgs = assess_msgs
+
         self._id_pattern = re.compile('/evaluate/.*?/(?P<id>.*?)$')
         self._course_assess_url = None  # 动态获取课程评估地址
 
@@ -176,7 +181,7 @@ class Assesser(Loginer):
 
 import settings
 if __name__ =='__main__':
-    assesser = Assesser(user_info=settings.USER_INFO,
+    assesser = Assesser(
                         urls=settings.URLS,
                         assess_msgs=settings.ASSESS_MSG)
     assesser.run()

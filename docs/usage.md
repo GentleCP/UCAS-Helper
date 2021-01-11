@@ -35,42 +35,48 @@
     ```
 
 # 修改配置
-根据需求修改配置文件:`settings.py`,`accounts.json`
-- 获取课程资源
-    - 进入[settings.py](settings.py)，找到`USER_INFO`修改你自己的用户名和密码
-    - 修改`SOURCE_DIR`，这个目录是所有课程资源存放的目录，根据你的个人需求修改  
-      
-        > 例如`D:/UCAS-sources`
-    > 在校园网内无需登录wifi，直接可登录课程网站
-- 登录wifi  
-    - wifi登录需修改根目录下的`accounts.json`，添加到useful_accounts中，格式如下：
-        ```text
-          {
-              "useful_accounts": [
-                {
-                   "stuid":"xxx",
-                   "pwd":"xxx"
-                },
-                {
-                    "stuid":"xxx",
-                    "pwd":"xxx"
-                }
-               
-              ],
-              "useless_accounts": [],
-              "current_month": 12
-            }
-        ```
-        每个账号一个，允许存储多个账号，当遇到一个账号流量不够的时候自动切换到下一个账号登录
+> Note: `settings.py`中用户账户、资源存储路径的信息即将迁移到`conf/user_config.ini`中
 
+- 运行`python ucashelper config`来启动配置引导程序，这会引导你设置用户信息和资源存储路径
+> 你也可以手动更改`conf/user_config.ini`，但我不建议你将这两个配置内容存储到`settings.py`中，后期会彻底将这部分内容转移
+
+- 根据需求修改配置文件:`settings.py`,`accounts.json`
+    - 获取课程资源
+        - 进入[settings.py](settings.py)，找到`USER_INFO`修改你自己的用户名和密码
+        - 修改`SOURCE_DIR`，这个目录是所有课程资源存放的目录，根据你的个人需求修改  
+          
+            > 例如`D:/UCAS-sources`
+        > 在校园网内无需登录wifi，直接可登录课程网站
+    - 登录wifi  
+        - wifi登录需修改根目录下的`accounts.json`，添加到useful_accounts中，格式如下：
+            ```text
+              {
+                  "useful_accounts": [
+                    {
+                       "stuid":"xxx",
+                       "pwd":"xxx"
+                    },
+                    {
+                        "stuid":"xxx",
+                        "pwd":"xxx"
+                    }
+                   
+                  ],
+                  "useless_accounts": [],
+                  "current_month": 12
+                }
+            ```
+            每个账号一个，允许存储多个账号，当遇到一个账号流量不够的时候自动切换到下一个账号登录
+    
 
 # 运行项目
 
 当确认配置信息修改完毕后，可以在终端或cmd下通过执行`python ucashelper.py ui`来启动小白操作窗口，同时也可以根据需要直接在命令行传入不同参数执行相应的操作，具体如下：
 
-```python
+```text
 python ucashelper.py --help # 查看命令使用帮助，直接运行python ucashelper.py 效果等同
 python ucashelper.py ui # 小白操作窗口
+python ucashelper.py config  # 引导配置
 
 python ucashelper.py down # 下载课程资源
 python ucashelper.py grade # 查看成绩

@@ -13,6 +13,7 @@
 --------------------------------------------
 """
 import re
+import configparser
 
 from bs4 import BeautifulSoup
 from core.login import Loginer
@@ -30,18 +31,43 @@ def show(infos):
 
 
 class Downloader(Loginer):
-    def __init__(self, user_info, urls, source_dir,filter_list):
-        super().__init__(user_info, urls)
+    def __init__(self,
+                 urls=None,
+                 user_config_path='../conf/user_config.ini',
+                 *args, **kwargs):
+        super().__init__(urls, user_config_path, *args, **kwargs)
         self._logger = LogHandler("Downloader")
-        self._source_dir = source_dir
-        self._filter_list = filter_list
+        self._resource_path_from_settings = kwargs.get('resource_path')
+        self._filter_list = kwargs.get('filter_list')
+
         self._update_sources = []
         self._l_course_info = []
         self._d_source_info = {}
-        self._S = requests.session()
         self._cur_course_info = None
+
         self._collection_id_pattern = re.compile("value='(?P<collection_id>.*?)';")  # 获取collection id 信息正则
         self._dir_pattern = re.compile("value='/group/[0-9]*/(?P<dir>.*?)';")   # 获取文件夹目录信息正则
+
+    def _set_resource_path(self):
+        '''
+        set resource path from conf/user_config.ini or from settings.py
+        :return: None
+        '''
+
+        from_settings_warning_msg = ('Note: you are using the resource path from settings.py which may remove in the future, '
+                                 'I suggest you to save the resource path in conf/user_config.ini')
+        try:
+            resource_path = self._cfg.get('course_info', 'resource_path')
+        except (configparser.NoSectionError, configparser.NoOptionError) as e:
+            self._logger.warning('Can not read resource path from {}, try to get it from settings.py'.format(self._user_config_path))
+            self._logger.warning(from_settings_warning_msg)
+            self._resource_path = self._resource_path_from_settings
+        else:
+            if not resource_path:
+                self._logger.warning(from_settings_warning_msg)
+                self._resource_path = self._resource_path_from_settings
+            else:
+                self._resource_path = resource_path
 
 
     def __update_source_info(self,course_info, bs4obj, dir):
@@ -146,11 +172,11 @@ class Downloader(Loginer):
         '''
         # 按季度划分课程
         if "秋季" in course_info['name']:
-            base_dir = self._source_dir + '/秋季/'
+            base_dir = self._resource_path + '/秋季/'
         elif "春季" in course_info['name']:
-            base_dir = self._source_dir + '/春季/'
+            base_dir = self._resource_path + '/春季/'
         else:
-            base_dir = self._source_dir+ '/夏季/'
+            base_dir = self._resource_path + '/夏季/'
         if not os.path.exists(base_dir):
             os.mkdir(base_dir)
 
@@ -198,7 +224,7 @@ class Downloader(Loginer):
 
             is_open = input("是否打开资源所在目录(默认n)？(y/n)")
             if is_open == 'y':
-                if open_dir(self._source_dir)==0:
+                if open_dir(self._resource_path)==0:
                     self._logger.info("已为您打开资源目录，请根据更新资源列表查询对应文件！")
                 else:
                     self._logger.error("打开资源目录失败，请手动开启！")
@@ -294,8 +320,9 @@ class Downloader(Loginer):
                     break
 
     def run(self):
-        if check_dir(self._source_dir):
-            self._logger.error("资源存储路径非法或不正确，请检查settings中SOURCE_DIR配置！")
+        self._set_resource_path()
+        if check_dir(self._resource_path):
+            self._logger.error("资源存储路径非法或不正确，请检查你的resource_path配置是否正确！")
             exit(ExitStatus.CONFIG_ERROR)
         self.login()
         self._set_course_info()  # 添加所有课程信息到内存中
@@ -307,6 +334,6 @@ import settings
 if __name__ == '__main__':
     downloader = Downloader(user_info=settings.USER_INFO,
                             urls=settings.URLS,
-                            source_dir=settings.SOURCE_DIR,
-                            filter_list=settings.FILTER_LIST)
+                            resource_path=settings.SOURCE_DIR,
+                            )
     downloader.run()

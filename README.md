@@ -1,6 +1,6 @@
 # UCAS Helper
 ![python version](https://img.shields.io/badge/python-3.5%2B-blue)
-![demo version](https://img.shields.io/badge/version-2.2.0-brightgreen)
+![demo version](https://img.shields.io/badge/version-2.3.0-brightgreen)
 ![license](https://img.shields.io/badge/license-GNU%20v3-yellowgreen)
 ```angular2
 *********************************************************************************
@@ -90,3 +90,5 @@
 
 如果你发现了问题，并自己解决修复了，希望你能提交PR，作为贡献者帮助完善这个项目。
 
+# 7.TODO
+- [ ] 一个全新的交互界面，有时间再写
