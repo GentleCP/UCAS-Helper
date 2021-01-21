@@ -69,4 +69,5 @@ venv.bak/
 *.un~
 
 accounts*
-*.ini
+user_config.ini
+record.ini
