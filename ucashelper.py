@@ -35,7 +35,7 @@ def config():
 
 @click.command(name='ui',help='Get UI interface of UCASHelper')
 def UI():
-    ui.main()
+    ui.main(record_path=settings.RECORD_PATH)
 
 
 @click.command(name='down',help='Download resources from sep website')
