@@ -97,7 +97,6 @@ class Init(object):
             self._logger.info('getting latest tag')
             return json.loads(requests.get(self.__latest_tag_api).text)[0].get('name')
         else:
-            print(local_tag)
             if not local_tag:
                 self._logger.info('getting latest tag')
                 return json.loads(requests.get(self.__latest_tag_api).text)[0].get('name')
@@ -111,7 +110,6 @@ class Init(object):
         :return:
         '''
         tag = self.__get_tag()
-        print(tag)
         print(self._welcome_msg.format(tag=tag))
 
 
