@@ -16,7 +16,7 @@ networkx==2.5
 npyscreen==4.10.5
 numpy==1.19.4
 packaging==20.3
-Pillow==8.0.1
+Pillow==8.1.1
 pkginfo==1.5.0.1
 prettytable==0.7.2
 Pygments==2.6.1
