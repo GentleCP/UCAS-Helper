@@ -1,6 +1,6 @@
 beautifulsoup4==4.8.1
 click==7.1.2
-lxml==4.6.2
+lxml==4.6.3
 networkx==2.5
 npyscreen==4.10.5
 numpy==1.19.4
