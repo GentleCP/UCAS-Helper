@@ -22,7 +22,7 @@
 
 - 已安装`git`,在`git bash`终端执行  
     ```text
-    git clone https://github.com/GentleCP/UCAS-Helper.git  && cd UCAS-Helper && pip install -r requirements.txt   
+    git clone --depth 1 https://github.com/GentleCP/UCAS-Helper.git  && cd UCAS-Helper && pip install -r requirements.txt   
     ```
     > 如果使用`pip3`，自行替换`pip`
 
@@ -38,10 +38,10 @@
 > Note: `settings.py`中用户账户、资源存储路径的信息即将迁移到`conf/user_config.ini`中
 
 - 运行`python ucashelper config`(仅支持`unix,linux`平台，不支持`windows`)来启动配置引导程序，这会引导你设置用户信息和资源存储路径
-> 你也可以手动更改`conf/user_config.ini`，但我不建议你将这两个配置内容存储到`settings.py`中，后期会彻底将这部分内容转移
+> 当你无法通过上述命令进行配置时，你也可以手动更改`conf/user_config.ini`，我不建议你将这两个配置内容存储到`settings.py`中，后期会彻底将这部分内容转移
 
 - 根据需求修改配置文件:`settings.py`,`accounts.json`
-    - 获取课程资源（如果在`user_config.ini`中已经配置，此处忽略）
+    - 获取课程资源（**如果在`user_config.ini`中已经配置个人信息和存储资源信息，此处忽略**）
         - 进入[settings.py](settings.py)，找到`USER_INFO`修改你自己的用户名和密码
         - 修改`SOURCE_DIR`，这个目录是所有课程资源存放的目录，根据你的个人需求修改  
           
@@ -87,7 +87,7 @@ python ucashelper.py assess # 自动评教，评教内容在settings.py中设置
 ```
 
 # 更新项目
-- ~~现已支持程序启动时自动进行更新检查~~（自动更新这一块有点问题，暂不推荐），在有更新的时候自动更新，不需要用户手动进行更新操作，如果你不希望每次都进行更新检查，可进入`settings.py`中设置`ALLOW_AUTO_UPDATE=False`  
+- ~~现已支持程序启动时自动进行更新检查，在有更新的时候自动更新，不需要用户手动进行更新操作，如果你不希望每次都进行更新检查~~ （自动更新这一块有点问题，暂不推荐）
     > 注意：由于自动更新依赖git，所以如果是通过`release`版本下载的代码无法使用自动更新功能，因此，本次也是最后一次发布`release`版本，后续更新都将采用此更新方式，如果你只想临时使用，不期待后续更新，可选择下载最新代码。
 
 
