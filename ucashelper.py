@@ -16,7 +16,6 @@ from core.assess import Assesser
 from core.grade import GradeObserver
 from core.download import Downloader
 from core.wifi import WifiLoginer
-from handler.configer import UCASHelperConfigApp
 
 import settings
 
@@ -28,9 +27,13 @@ sys.path.append(ROOT_PATH)
 def start():
     """UCASHelper is a useful tool for UCASer, following are the arguments that you could choose"""
 
-@click.command(name='config',help='Set your user info and download path')
+@click.command(name='config',help='Set your user info and download path(not support on windows)')
 def config():
-    UCASHelperConfigApp().run()
+    if not sys.platform.startswith('win'):
+        from handler.configer import UCASHelperConfigApp
+        UCASHelperConfigApp().run()
+    else:
+        print('config not support on windows. please set config in conf/user_config.ini by yourself.')
 
 
 @click.command(name='ui',help='Get UI interface of UCASHelper')
