@@ -62,6 +62,10 @@ URLS = {
         'http':'http://onestop.ucas.ac.cn/',
         'https':'https://onestop.ucas.ac.cn/'
     },
+    'bak_home_url':{
+        'http': 'http://sep.ucas.ac.cn/',
+        'https': 'https://sep.ucas.ac.cn/'
+    },
     'base_url':{
         'http':'http://jwxk.ucas.ac.cn',
         'https':'https://jwxk.ucas.ac.cn',
@@ -69,6 +73,10 @@ URLS = {
     'login_url': {
         'http':'http://onestop.ucas.ac.cn/Ajax/Login/0',
         'https':'https://onestop.ucas.ac.cn/Ajax/Login/0'
+    },
+    'bak_login_url':{
+        'http': 'http://sep.ucas.ac.cn/slogin',
+        'https': 'https://sep.ucas.ac.cn/slogin'
     },
     'logout_url': {
         'http':'http://sep.ucas.ac.cn/logout?o=platform',

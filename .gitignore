@@ -70,3 +70,5 @@ venv.bak/
 
 accounts*
 conf/
+
+log/

@@ -17,6 +17,8 @@ import requests
 import settings
 import json
 import warnings
+from PIL import Image
+from io import BytesIO
 
 import configparser
 from handler.logger import LogHandler
@@ -104,10 +106,19 @@ class Loginer(object):
 
     def login(self):
         self._set_user_info()
-        self._S.get(url=self._urls['home_url']['https'], headers=self.headers, verify=False)  # 获取identity
-        res = None
+        # self._S.get(url=self._urls['home_url']['https'], headers=self.headers, verify=False)  # 获取identity
+        res = self._S.get(url=self._urls['bak_home_url']['http']+'changePic/', headers=self.headers)
+        captcha_img = Image.open(BytesIO(res.content))
+        captcha_img.show()
+        captcha_code = input("请输入图片展示的验证码信息:")
+        post_data = {
+            'userName': self._user_info.get('username', ''),
+            'pwd': self._user_info.get('password', ''),
+            'certCode': captcha_code,
+            'sb': 'sb'
+        }
         try:
-            res = self._S.post(url=self._urls["login_url"]['https'], data=self._user_info, headers=self.headers, timeout=10)
+            res = self._S.post(url=self._urls["bak_login_url"]['http'], data=post_data, headers=self.headers, timeout=10)
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ReadTimeout):
@@ -117,14 +128,13 @@ class Loginer(object):
             self._logger.error('sep登录失败，未知错误，请到github提交issue，等待作者修复.')
             exit(ExitStatus.UNKNOW_ERROR)
         else:
-            json_res = res.json()
-            if json_res["f"]:
-                self._S.get(res.json()["msg"], headers=self.headers)
+            if "请输入您的密码" in res.text:
+                self._logger.error("sep登录失败，请检查你的用户名和密码设置以及验证码输入是否正确！")
+                exit(ExitStatus.CONFIG_ERROR)
+            else:
                 self._logger.info("sep登录成功！")
                 self.__keep_session()
-            else:
-                self._logger.error("sep登录失败，请检查你的用户名和密码设置是否正确！")
-                exit(ExitStatus.CONFIG_ERROR)
+
 
 
 if __name__ == '__main__':
