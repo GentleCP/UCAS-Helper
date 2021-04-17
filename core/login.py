@@ -107,16 +107,25 @@ class Loginer(object):
     def login(self):
         self._set_user_info()
         # self._S.get(url=self._urls['home_url']['https'], headers=self.headers, verify=False)  # 获取identity
-        res = self._S.get(url=self._urls['bak_home_url']['http']+'changePic/', headers=self.headers)
-        captcha_img = Image.open(BytesIO(res.content))
-        captcha_img.show()
-        captcha_code = input("请输入图片展示的验证码信息:")
-        post_data = {
-            'userName': self._user_info.get('username', ''),
-            'pwd': self._user_info.get('password', ''),
-            'certCode': captcha_code,
-            'sb': 'sb'
-        }
+        try:
+            res = self._S.get(url=self._urls['bak_home_url']['http']+'changePic/', headers=self.headers)
+        except:
+            # 校园网内不需要验证码
+            post_data = {
+                'userName': self._user_info.get('username', ''),
+                'pwd': self._user_info.get('password', ''),
+                'sb': 'sb'
+            }
+        else:
+            captcha_img = Image.open(BytesIO(res.content))
+            captcha_img.show()
+            captcha_code = input("请输入图片展示的验证码信息:")
+            post_data = {
+                'userName': self._user_info.get('username', ''),
+                'pwd': self._user_info.get('password', ''),
+                'certCode': captcha_code,
+                'sb': 'sb'
+            }
         try:
             res = self._S.post(url=self._urls["bak_login_url"]['http'], data=post_data, headers=self.headers, timeout=10)
         except (requests.exceptions.ConnectionError,
