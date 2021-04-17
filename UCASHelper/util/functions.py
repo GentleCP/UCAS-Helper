@@ -18,8 +18,6 @@ import logging
 from tqdm import tqdm
 from configparser import ConfigParser
 
-from handler.exception import ConfigReadError
-
 
 def download_file(url, session=None, file_path='未命名文件', overwrite = False):
     '''

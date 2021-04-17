@@ -10,14 +10,14 @@ import click
 import sys
 import os
 
-from handler import ui
-from core.wifi import AccHacker
-from core.assess import Assesser
-from core.grade import GradeObserver
-from core.download import Downloader
-from core.wifi import WifiLoginer
+from UCASHelper.handler import ui
+from UCASHelper.core.wifi import AccHacker
+from UCASHelper.core.assess import Assesser
+from UCASHelper.core.grade import GradeObserver
+from UCASHelper.core.download import Downloader
+from UCASHelper.core.wifi import WifiLoginer
 
-import settings
+from UCASHelper import settings
 
 ROOT_PATH = os.path.dirname(__file__)
 sys.path.append(ROOT_PATH)
@@ -30,7 +30,7 @@ def start():
 @click.command(name='config',help='Set your user info and download path(not support on windows)')
 def config():
     if not sys.platform.startswith('win'):
-        from handler.configer import UCASHelperConfigApp
+        from UCASHelper.handler import UCASHelperConfigApp
         UCASHelperConfigApp().run()
     else:
         print('config not support on windows. please set config in conf/user_config.ini by yourself.')
@@ -73,7 +73,7 @@ def query_grades():
 
 @click.command(name='hack',help='Hack wifi accounts')
 def hack_accounts():
-    hacker = AccHacker(data_path='data/data.txt', password_path='data/password.txt')
+    hacker = AccHacker(data_path='UCASHelper/data/data.txt', password_path='UCASHelper/data/password.txt')
     hacker.run()
 
 @click.command(name='login',help='Login campus network')

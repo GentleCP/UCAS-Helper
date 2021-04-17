@@ -14,16 +14,15 @@
 """
 import re
 import requests
-import settings
-import json
+from UCASHelper import settings
 import warnings
 from PIL import Image
 from io import BytesIO
 
 import configparser
-from handler.logger import LogHandler
-from handler.exception import ExitStatus
-from util.functions import get_cfg
+from UCASHelper.handler.logger import LogHandler
+from UCASHelper.handler import ExitStatus
+from UCASHelper.util import get_cfg
 
 warnings.filterwarnings('ignore')
 
@@ -140,5 +139,5 @@ class Loginer(object):
 if __name__ == '__main__':
     loginer = Loginer(user_info=settings.USER_INFO,
                       urls=settings.URLS,
-                      user_config_path='../conf/user_config.ini')
+                      user_config_path='../../conf/user_config.ini')
     loginer.login()

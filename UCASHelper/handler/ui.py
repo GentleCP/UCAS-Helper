@@ -11,17 +11,15 @@ import os
 import configparser
 import json
 
-from core.assess import Assesser
-from core.grade import GradeObserver
-from core.download import Downloader
-from handler.exception import BackToMain, ExitStatus
-from core.wifi import WifiLoginer,WifiError
-from handler.logger import LogHandler
-from util.functions import get_cfg
+from UCASHelper.core import Assesser
+from UCASHelper.core import GradeObserver
+from UCASHelper.core.download import Downloader
+from UCASHelper.handler import BackToMain, ExitStatus
+from UCASHelper.core import WifiLoginer,WifiError
+from UCASHelper.handler.logger import LogHandler
+from UCASHelper.util import get_cfg
 
-
-import settings
-
+from UCASHelper import settings
 
 WELCOME_MESSAGE = """
 *********************************************************************************

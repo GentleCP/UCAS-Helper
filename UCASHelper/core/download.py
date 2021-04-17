@@ -16,10 +16,9 @@ import re
 import configparser
 
 from bs4 import BeautifulSoup
-from core.login import Loginer
-from util.functions import *
-from handler.logger import LogHandler
-from handler.exception import ExitStatus
+from UCASHelper.core.login import Loginer
+from UCASHelper.handler.logger import LogHandler
+from UCASHelper.handler import ExitStatus
 
 
 def show(infos):
@@ -329,7 +328,7 @@ class Downloader(Loginer):
         self._cmd()  # 进入交互界面
 
 
-import settings
+from UCASHelper import settings
 
 if __name__ == '__main__':
     downloader = Downloader(user_info=settings.USER_INFO,

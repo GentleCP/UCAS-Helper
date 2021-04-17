@@ -68,7 +68,7 @@ venv.bak/
 .idea
 *.un~
 
-accounts*
+accounts.json
 conf/*
 
 log/*

@@ -13,12 +13,11 @@
 --------------------------------------------
 """
 import requests
-import logging
 from bs4 import BeautifulSoup
 from prettytable import PrettyTable
 
-from core.login import Loginer
-from handler.logger import LogHandler
+from UCASHelper.core.login import Loginer
+from UCASHelper.handler.logger import LogHandler
 
 class GradeObserver(Loginer):
     """
@@ -57,7 +56,7 @@ class GradeObserver(Loginer):
         self._show_grade()
 
 
-import settings
+from UCASHelper import settings
 
 if __name__ =='__main__':
     gradeObserver = GradeObserver(urls=settings.URLS)

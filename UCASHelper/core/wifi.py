@@ -11,7 +11,7 @@ import datetime
 import requests
 from urllib.parse import urlparse
 
-from handler.exception import WifiError
+from UCASHelper.handler import WifiError
 
 def login_wifi(stuid,password):
     try:

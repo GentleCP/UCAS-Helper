@@ -14,9 +14,9 @@
 import npyscreen as nps
 
 
-from settings import USER_CONFIG_PATH
-from handler.exception import ExitStatus
-from util.functions import get_cfg
+from UCASHelper.settings import USER_CONFIG_PATH
+from UCASHelper.handler import ExitStatus
+from UCASHelper.util import get_cfg
 
 WELCOME_DIALOG = ('Welcome to the UCAS Helper Config setting panel.\n\n'
                   'It will store your personal user information into local file:\'{}\'\n'

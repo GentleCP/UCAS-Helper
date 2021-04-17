@@ -18,8 +18,8 @@ import requests
 
 from bs4 import BeautifulSoup
 
-from core.login import Loginer
-from handler.logger import LogHandler
+from UCASHelper.core.login import Loginer
+
 
 class Assesser(Loginer):
 
@@ -179,7 +179,8 @@ class Assesser(Loginer):
         self._assess_teachers(teacher_ids)
 
 
-import settings
+from UCASHelper import settings
+
 if __name__ =='__main__':
     assesser = Assesser(
                         urls=settings.URLS,
