@@ -69,6 +69,6 @@ venv.bak/
 *.un~
 
 accounts*
-conf/
+conf/*
 
-log/
+log/*
