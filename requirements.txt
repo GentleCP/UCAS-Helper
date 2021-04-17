@@ -9,4 +9,4 @@ readme-renderer==26.0
 requests==2.23.0
 tqdm==4.45.0
 urllib3==1.25.7
-Pillow==8.0.1
+Pillow==8.1.1
