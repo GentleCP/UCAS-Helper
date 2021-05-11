@@ -15,6 +15,8 @@
 import re
 import time
 import requests
+from PIL import Image
+from io import BytesIO
 
 from bs4 import BeautifulSoup
 
@@ -66,11 +68,14 @@ class Assesser(Loginer):
         except requests.Timeout:
             res = self._S.get(self._urls['base_evaluateCourse_url']['https'] + course_id, headers=self.headers)
 
+    
         s = res.text.split('?s=')[-1].split('"')[0]
         bs4obj = BeautifulSoup(res.text, 'html.parser')
         radios = bs4obj.find_all('input', attrs={'type': 'radio'})
         value = radios[0]['value']
         data = {}
+        data['adminValidateCodeStr'] =  self._get_capcha_code()
+
         for radio in radios:
             data[radio['name']] = value
         textareas = bs4obj.find_all('textarea')
@@ -84,11 +89,12 @@ class Assesser(Loginer):
         data['subjectiveCheckbox']= subjectiveCheckbox  # 自己需求和兴趣
 
         try:
-            post_url = self._urls['base_saveCourseEval_url']['http'] + course_id + '?s=' + s
+            post_url = self._urls['base_saveCourseEval_url']['http'] + course_id[:-2] + '?s=' + s
             res = self._S.post(post_url, data=data,headers=self.headers,timeout=5)
         except requests.Timeout:
-            post_url = self._urls['base_saveCourseEval_url']['https'] + course_id + '?s=' + s
+            post_url = self._urls['base_saveCourseEval_url']['https'] + course_id[:-2] + '?s=' + s
             res = self._S.post(post_url, data=data, headers=self.headers)
+
         tmp = BeautifulSoup(res.text, 'html.parser')
         try:
             flag = tmp.find('label', attrs={'id': 'loginSuccess'})
@@ -100,6 +106,7 @@ class Assesser(Loginer):
         except AttributeError:
             print('\033[1;45m{}评估结果：[fail]，尝试重新评估 \033[0m'.format(course_id))
             self.__assess_course(course_id)
+    
 
 
     def _assess_courses(self, course_ids):
@@ -120,6 +127,7 @@ class Assesser(Loginer):
         for url in urls:
             teacher_ids.append(self._id_pattern.search(url).groupdict()['id'])
         return teacher_ids
+    
 
     def __assess_teacher(self, teacher_id):
         try:
@@ -127,10 +135,13 @@ class Assesser(Loginer):
         except requests.Timeout:
             res = self._S.get(self._urls['base_evaluateTeacher_url']['https'] + teacher_id, headers=self.headers)
 
+
         bs4obj = BeautifulSoup(res.text,'lxml')
         radios = bs4obj.find_all('input', attrs={'type': 'radio'})
         value = radios[0]['value']  # 默认全5星好评
         data = {}
+        data['adminValidateCodeStr'] =  self._get_capcha_code()
+
         for radio in radios:
             data[radio['name']] = value
         textareas = bs4obj.find_all('textarea')
@@ -170,6 +181,15 @@ class Assesser(Loginer):
             self.__assess_teacher(teacher_id)
         self._logger.info('教师评估完毕')
 
+    def _get_capcha_code(self):
+        try:
+            captcha_res = self._S.get(self._urls['base_evaluate_url']['http'] + '/adminValidateImage.jpg', headers=self.headers, timeout=5)
+        except requests.Timeout:
+            captcha_res = self._S.get(self._urls['base_evaluate_url']['https'] + '/adminValidateImage.jpg', headers=self.headers, timeout=5)
+        captcha_img = Image.open(BytesIO(captcha_res.content))
+        captcha_img.show()
+        captcha_code = input("请输入图片展示的验证码信息:")
+        return captcha_code
 
     def run(self):
         self.login()
