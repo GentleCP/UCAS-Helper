@@ -108,7 +108,7 @@ class Loginer(object):
         self._set_user_info()
         # self._S.get(url=self._urls['home_url']['https'], headers=self.headers, verify=False)  # 获取identity
         try:
-            res = self._S.get(url=self._urls['bak_home_url']['http']+'changePic/', headers=self.headers)
+            res = self._S.get(url=self._urls['bak_home_url']['http']+'randomcode.jpg', headers=self.headers)
         except:
             # 校园网内不需要验证码
             post_data = {
