@@ -19,6 +19,7 @@ import json
 import warnings
 from PIL import Image
 from io import BytesIO
+from bs4 import BeautifulSoup
 
 import configparser
 from handler.logger import LogHandler
@@ -108,7 +109,13 @@ class Loginer(object):
         self._set_user_info()
         # self._S.get(url=self._urls['home_url']['https'], headers=self.headers, verify=False)  # 获取identity
         try:
-            res = self._S.get(url=self._urls['bak_home_url']['http']+'randomcode.jpg', headers=self.headers)
+            res = self._S.get(url=self._urls['course_select_url']['http'], headers=self.headers, timeout=5)
+        except requests.Timeout:
+            res = self._S.get(url=self._urls['course_select_url']['https'], headers=self.headers)
+        soup = BeautifulSoup(res.text, 'html.parser')
+        try:
+            res = self._S.get(url=self._urls['bak_home_url']['http'] + soup.select_one("img#code").get("src"),
+                              headers=self.headers)
         except:
             # 校园网内不需要验证码
             post_data = {
