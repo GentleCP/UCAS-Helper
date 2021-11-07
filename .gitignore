@@ -55,6 +55,9 @@ instance/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# ide config
+.vscode/
+.idea/
 
 # Environments
 .env
