@@ -25,6 +25,7 @@ import configparser
 from handler.logger import LogHandler
 from handler.exception import ExitStatus
 from util.functions import get_cfg
+from util.ocr import do_ocr
 
 warnings.filterwarnings('ignore')
 
@@ -125,8 +126,9 @@ class Loginer(object):
             }
         else:
             captcha_img = Image.open(BytesIO(res.content))
-            captcha_img.show()
-            captcha_code = input("请输入图片展示的验证码信息:")
+            # captcha_img.show()
+            # captcha_code = input("请输入图片展示的验证码信息:")
+            captcha_code = do_ocr(captcha_img)
             post_data = {
                 'userName': self._user_info.get('username', ''),
                 'pwd': self._user_info.get('password', ''),

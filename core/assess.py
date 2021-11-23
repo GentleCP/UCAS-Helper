@@ -17,6 +17,7 @@ import time
 import requests
 from PIL import Image
 from io import BytesIO
+from util import ocr
 
 from bs4 import BeautifulSoup
 
@@ -187,8 +188,10 @@ class Assesser(Loginer):
         except requests.Timeout:
             captcha_res = self._S.get(self._urls['base_evaluate_url']['https'] + '/adminValidateImage.jpg', headers=self.headers, timeout=5)
         captcha_img = Image.open(BytesIO(captcha_res.content))
-        captcha_img.show()
-        captcha_code = input("请输入图片展示的验证码信息:")
+        # captcha_img.show()
+        # captcha_code = input("请输入图片展示的验证码信息:")
+        captcha_code = ocr.do_ocr(captcha_img)
+        print("验证码信息： ", captcha_code)
         return captcha_code
 
     def run(self):
