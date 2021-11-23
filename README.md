@@ -63,7 +63,16 @@
 - 【210414-课程网站登录失效】：由于课程网站改版，之前的登录接口即便账号密码输入正确，依然会提示账号密码错误，该问题已在`v2.3.4`中得到修复，请使用`>=`该版本的程序
 
 # 3. 作者信息
+
 [@GentleCP](https://github.com/GentleCP)
+
+## 贡献者
+
+> 感谢以下同学为项目提供的PR~
+
+- [waruto210](https://github.com/waruto210)
+- [enochii](https://github.com/enochii)
+- [shijy16](https://github.com/shijy16)
 
 # 4. 效果预览
 
