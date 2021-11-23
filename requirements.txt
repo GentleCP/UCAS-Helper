@@ -1,7 +1,8 @@
-beautifulsoup4==4.10.0
-click==8.0.3
-npyscreen==4.10.5
-Pillow==8.4.0
-prettytable==2.4.0
-requests==2.26.0
-tqdm==4.62.3
+beautifulsoup4>=4.10.0
+click>=8.0.3
+npyscreen>=4.10.5
+Pillow>=8.4.0
+prettytable>=2.4.0
+requests>=2.26.0
+tqdm>=4.62.3
+ddddocr>=1.0.6
