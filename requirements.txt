@@ -6,3 +6,4 @@ prettytable>=2.4.0
 requests>=2.26.0
 tqdm>=4.62.3
 ddddocr>=1.0.6
+pycryptodome
