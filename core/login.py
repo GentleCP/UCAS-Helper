@@ -12,10 +12,10 @@
 
 --------------------------------------------
 """
+import base64
 import re
 import requests
 import settings
-import json
 import warnings
 from PIL import Image
 from io import BytesIO
@@ -26,14 +26,25 @@ from handler.logger import LogHandler
 from handler.exception import ExitStatus
 from util.functions import get_cfg
 from util.ocr import do_ocr
+from Crypto.Cipher import PKCS1_v1_5 as Cipher_pksc1_v1_5
+from Crypto.PublicKey import RSA
 
 warnings.filterwarnings('ignore')
+
+
+def simulate_JSEncrypt(password, public_key):
+    public_key = '-----BEGIN PUBLIC KEY-----\n' + public_key + '\n-----END PUBLIC KEY-----'
+    rsakey = RSA.importKey(public_key)
+    cipher = Cipher_pksc1_v1_5.new(rsakey)
+    cipher_text = base64.b64encode(cipher.encrypt(password.encode()))
+    return cipher_text.decode()
 
 
 class Loginer(object):
     """
     登录课程网站
     """
+
     def __init__(self,
                  urls=None,
                  user_config_path='../conf/user_config.ini',
@@ -67,20 +78,23 @@ class Loginer(object):
             'Accept-Language': 'zh-CN,zh;q=0.9',
         }
 
-
     def _set_user_info(self):
         '''
         set user info from conf/user_config.ini or from settings.py
         :return: None
         '''
 
-        from_settings_warning_msg = ('Note: you are using the user info from settings.py which may remove in the future, '
-                                 'I suggest you to save the user info in conf/user_config.ini')
+        from_settings_warning_msg = (
+            'Note: you are using the user info from settings.py which may remove in the future, '
+            'I suggest you to save the user info in conf/user_config.ini')
         try:
             username = self._cfg.get('user_info', 'username')
             password = self._cfg.get('user_info', 'password')
+            key = self._cfg.get('sep_info', 'key')
+            password = simulate_JSEncrypt(password, key)
         except (configparser.NoSectionError, configparser.NoOptionError) as e:
-            self._logger.warning('Can not read user info from {}, try to get it from settings.py'.format(self._user_config_path))
+            self._logger.warning(
+                'Can not read user info from {}, try to get it from settings.py'.format(self._user_config_path))
             self._logger.warning(from_settings_warning_msg)
             self._user_info = self._user_info_from_settings
         else:
@@ -95,16 +109,14 @@ class Loginer(object):
                     'remember': 'undefined'
                 }
 
-
     def __keep_session(self):
         try:
-            res = self._S.get(url=self._urls['course_select_url']['http'], headers = self.headers, timeout=5)
+            res = self._S.get(url=self._urls['course_select_url']['http'], headers=self.headers, timeout=5)
         except requests.Timeout:
-            res = self._S.get(url=self._urls['course_select_url']['https'], headers = self.headers)
+            res = self._S.get(url=self._urls['course_select_url']['https'], headers=self.headers)
         course_select_url = re.search(r"window.location.href='(?P<course_select_url>.*?)'", res.text).groupdict().get(
             "course_select_url")
-        self._S.get(course_select_url,headers=self.headers)
-
+        self._S.get(course_select_url, headers=self.headers)
 
     def login(self):
         self._set_user_info()
@@ -136,7 +148,8 @@ class Loginer(object):
                 'sb': 'sb'
             }
         try:
-            res = self._S.post(url=self._urls["bak_login_url"]['http'], data=post_data, headers=self.headers, timeout=10)
+            res = self._S.post(url=self._urls["bak_login_url"]['http'], data=post_data, headers=self.headers,
+                               timeout=10)
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ReadTimeout):
@@ -152,7 +165,6 @@ class Loginer(object):
             else:
                 self._logger.info("sep登录成功！")
                 self.__keep_session()
-
 
 
 if __name__ == '__main__':

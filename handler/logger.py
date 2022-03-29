@@ -32,7 +32,7 @@ path = Path()
 
 CURRENT_PATH = path.resolve(__file__)
 ROOT_PATH = CURRENT_PATH.parent
-LOG_PATH = ROOT_PATH.joinpath('log')
+LOG_PATH = CURRENT_PATH.joinpath('log')
 
 if not os.path.exists(LOG_PATH):
     try:
