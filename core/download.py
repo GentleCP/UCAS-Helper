@@ -37,8 +37,7 @@ class Downloader(Loginer):
                  *args, **kwargs):
         super().__init__(urls, user_config_path, *args, **kwargs)
         self._logger = LogHandler("Downloader")
-        self._resource_path_from_settings = kwargs.get('resource_path')
-        self._filter_list = kwargs.get('filter_list')
+        self._filter_list = kwargs.get('filter_list', [])
 
         self._update_sources = []
         self._l_course_info = []
@@ -46,49 +45,51 @@ class Downloader(Loginer):
         self._cur_course_info = None
 
         self._collection_id_pattern = re.compile("value='(?P<collection_id>.*?)';")  # 获取collection id 信息正则
-        self._dir_pattern = re.compile("value='/group/[0-9]*/(?P<dir>.*?)';")   # 获取文件夹目录信息正则
+        self._dir_pattern = re.compile("value='/group/[0-9]*/(?P<dir>.*?)';")  # 获取文件夹目录信息正则
 
     def _set_resource_path(self):
         '''
         set resource path from conf/user_config.ini or from settings.py
         :return: None
         '''
-
-        from_settings_warning_msg = ('Note: you are using the resource path from settings.py which may remove in the future, '
-                                 'I suggest you to save the resource path in conf/user_config.ini')
         try:
             resource_path = self._cfg.get('course_info', 'resource_path')
         except (configparser.NoSectionError, configparser.NoOptionError) as e:
-            self._logger.warning('Can not read resource path from {}, try to get it from settings.py'.format(self._user_config_path))
-            self._logger.warning(from_settings_warning_msg)
-            self._resource_path = self._resource_path_from_settings
+            self._logger.error(
+                'Can not read resource path from {}, please enter your resource path at first.(do not store it in settings.py, it is no longer supported'.format(
+                    self._user_config_path))
+            exit(ExitStatus.CONFIG_ERROR)
         else:
             if not resource_path:
-                self._logger.warning(from_settings_warning_msg)
-                self._resource_path = self._resource_path_from_settings
+                self._logger.error(
+                    'Resource path can not be empty, check it in {}.'.format(
+                        self._user_config_path))
+                exit(ExitStatus.CONFIG_ERROR)
             else:
+                self._logger.info('find source path, data will store in {}'.format(resource_path))
                 self._resource_path = resource_path
+                if not os.path.exists(self._resource_path):
+                    os.mkdir(self._resource_path)
 
-
-    def __update_source_info(self,course_info, bs4obj, dir):
+    def __update_source_info(self, course_info, bs4obj, dir):
         i = 1
         for e in bs4obj.findAll('a'):
             try:
                 if 'course.ucas.ac.cn/access/content/group' in e["href"]:
                     filename = e.find('span', {'class': 'hidden-sm hidden-xs'}).get_text()
-                    self._d_source_info[course_info["name"]].append({'id': i,'name': dir+filename, 'url': e["href"]})
+                    self._d_source_info[course_info["name"]].append({'id': i, 'name': dir + filename, 'url': e["href"]})
                     i += 1
             except (KeyError, AttributeError):
                 continue
 
-    def _recur_dir(self,course_info, source_url, bs4obj):
+    def _recur_dir(self, course_info, source_url, bs4obj):
         '''
         递归获取文件夹下文件信息
         :param source_url:
         :param bs4obj:
         :return:
         '''
-        l_dir_objs =bs4obj.findAll('a', {'title': '文件夹'})
+        l_dir_objs = bs4obj.findAll('a', {'title': '文件夹'})
         if len(l_dir_objs) > 1:
             # 存在其他文件夹，添加当前目录资源信息，接着递归文件夹下内容
             cur_dir = self._dir_pattern.findall(l_dir_objs[0]["onclick"])[0]  # 获取了课程文件夹信息
@@ -110,16 +111,18 @@ class Downloader(Loginer):
                     'itemCanRevise': 'false',
                     'sakai_csrf_token': csrf_token
                 }
-                res = self._S.post(source_url, data=data,headers=self.headers)  # 获取文件夹下资源信息
+                res = self._S.post(source_url, data=data, headers=self.headers)  # 获取文件夹下资源信息
                 bs4obj = BeautifulSoup(res.text, 'html.parser')
                 self._recur_dir(course_info, source_url, bs4obj)
 
         else:
             # 没有更深层文件夹了，添加资源信息
-            cur_dir = self._dir_pattern.findall(l_dir_objs[0]["onclick"])[0]  # 获取了课程文件夹信息
+            try:
+                cur_dir = self._dir_pattern.findall(l_dir_objs[0]["onclick"])[0]  # 获取了课程文件夹信息
+            except IndexError:
+                cur_dir = None
             self.__update_source_info(course_info, bs4obj, cur_dir)
             return
-
 
     def _set_course_info(self):
         if not self._l_course_info:
@@ -131,10 +134,10 @@ class Downloader(Loginer):
 
             bsobj = BeautifulSoup(res.text, "html.parser")
             refresh_url = bsobj.find("noscript").meta.get("content")[6:]  # 获取新的定向url
-            res = self._S.get(refresh_url,headers=self.headers)
+            res = self._S.get(refresh_url, headers=self.headers)
             bsobj = BeautifulSoup(res.text, "html.parser")
             new_course_url = bsobj.find('a', {"title": "我的课程 - 查看或加入站点"}).get("href")  # 获取到新的课程信息url
-            res = self._S.get(new_course_url,headers=self.headers)
+            res = self._S.get(new_course_url, headers=self.headers)
             bsobj = BeautifulSoup(res.text, "html.parser")
             course_list = bsobj.findAll('tr')  # 尚未筛选的杂乱信息
             i = 1
@@ -155,15 +158,12 @@ class Downloader(Loginer):
         '''
         if not self._d_source_info[course_info["name"]]:
             # 该门课的资源信息尚未存储到内存
-            res = self._S.get(course_info["url"],headers=self.headers)
+            res = self._S.get(course_info["url"], headers=self.headers)
             bs4obj = BeautifulSoup(res.text, "html.parser")
             source_url = bs4obj.find('a', {'title': '资源 - 上传、下载课件，发布文档，网址等信息'}).get("href")
-            res = self._S.get(source_url,headers=self.headers)   # 获取课程资源页面
+            res = self._S.get(source_url, headers=self.headers)  # 获取课程资源页面
             bs4obj = BeautifulSoup(res.text, "lxml")
-            self._recur_dir(course_info,source_url,bs4obj)
-
-
-
+            self._recur_dir(course_info, source_url, bs4obj)
 
     def _download_one(self, course_info, source_info):
         '''
@@ -187,7 +187,7 @@ class Downloader(Loginer):
         dirs = source_info['name'].split('/')[0:-1]  # 只取目录部分
         if dirs:
             # 存在文件夹，递归检测文件夹
-            recur_mkdir(course_dir,dirs)
+            recur_mkdir(course_dir, dirs)
 
         file_path = base_dir + course_info["name"] + '/' + source_info['name']  # 文件存储路径
         if not os.path.isfile(file_path):
@@ -220,18 +220,17 @@ class Downloader(Loginer):
         if self._update_sources:
             self._logger.info("[同步完成] 本次更新资源列表如下：")
             for source in self._update_sources:
-                print('\033[1;41m'+source+'\033[0m')
+                print('\033[1;41m' + source + '\033[0m')
 
             is_open = input("是否打开资源所在目录(默认n)？(y/n)")
             if is_open == 'y':
-                if open_dir(self._resource_path)==0:
+                if open_dir(self._resource_path) == 0:
                     self._logger.info("已为您打开资源目录，请根据更新资源列表查询对应文件！")
                 else:
                     self._logger.error("打开资源目录失败，请手动开启！")
         else:
             self._logger.info("[同步完成] 本次无更新内容！")
         exit(ExitStatus.OK)
-
 
     def __check_option(self, option):
         if option == 'q':
@@ -284,7 +283,6 @@ class Downloader(Loginer):
             self._logger.warning("非法操作，请重新输入")
             return False
 
-
     def _cmd(self):
         while True:
             print("\033[1;45m>课程列表：\033[0m", flush=True)
@@ -332,8 +330,7 @@ class Downloader(Loginer):
 import settings
 
 if __name__ == '__main__':
-    downloader = Downloader(user_info=settings.USER_INFO,
+    downloader = Downloader(
                             urls=settings.URLS,
-                            resource_path=settings.SOURCE_DIR,
                             )
     downloader.run()

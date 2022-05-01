@@ -68,20 +68,16 @@ class Init(object):
 
         self._wifiLoginer = WifiLoginer(accounts_path=settings.ACCOUNTS_PATH)
         self._downloader = Downloader(
-                                user_info=settings.USER_INFO,  # 未来删除
                                 urls=settings.URLS,
                                 user_config_path=settings.USER_CONFIG_PATH,
-                                resource_path=settings.SOURCE_DIR,  # 未来删除
                                 filter_list=settings.FILTER_LIST)
 
         self._assesser = Assesser(
-                                user_info=settings.USER_INFO,  # 未来删除
                                 user_config_path=settings.USER_CONFIG_PATH,
                                 urls=settings.URLS,
                                 assess_msgs=settings.ASSESS_MSG)
         self._gradeObserver = GradeObserver(
                                 user_config_path=settings.USER_CONFIG_PATH,
-                                user_info=settings.USER_INFO,  # 未来删除
                                 urls=settings.URLS)
 
     def __get_tag(self):

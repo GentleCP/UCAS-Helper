@@ -1,30 +1,17 @@
 # @Author  : GentleCP
-# @Email   : 574881148@qq.com
+# @Email   : me@gentlecp.com
 # @File    : settings.py
 # @Item    : PyCharm
 # @Time    : 2019-11-18 15:48
-# @WebSite : https://www.gentlecp.com
+# @WebSite : https://blog.gentlecp.com
 
 
 
-# Note：用户信息与课程资源存储目录配置未来会转移到conf/user_config.ini中，建议将配置信息填写在那里
-
-#-----------------------------------------------------------
-# 填写你自己的用户信息
-USER_INFO = {
-    'username': '',
-    'password': '',
-    'remember': 'checked'  # 此处不要动
-}
-
-# 课程资源存储目录，如 D:/ucas-resources
-SOURCE_DIR = '.'
-
-#-----------------------------------------------------------
+# Note：用户信息与课程资源存储目录配置已转移到conf/user_config.ini中，请将配置信息填写在那里
 
 
 #------------------------由用户决定的配置信息-----------------------------------
-ALLOW_AUTO_UPDATE = False   # 是否自动更新,开启后会在程序每次启动时检测github最新代码，并自动进行同步
+ALLOW_AUTO_UPDATE = False   # 自动更新存在问题，请勿使用
 
 # 根据你个人喜好修改评估的内容
 ASSESS_MSG = [

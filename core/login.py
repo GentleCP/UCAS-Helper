@@ -58,7 +58,6 @@ class Loginer(object):
         self._logger = LogHandler("Loginer")
         self._S = requests.session()
         self._user_config_path = user_config_path
-        self._user_info_from_settings = kwargs.get('user_info')
         self._cfg = get_cfg(self._user_config_path)
         self._urls = urls
 
@@ -80,28 +79,27 @@ class Loginer(object):
 
     def _set_user_info(self):
         '''
-        set user info from conf/user_config.ini or from settings.py
+        set user info from conf/user_config.ini
         :return: None
         '''
-
-        from_settings_warning_msg = (
-            'Note: you are using the user info from settings.py which may remove in the future, '
-            'I suggest you to save the user info in conf/user_config.ini')
         try:
             username = self._cfg.get('user_info', 'username')
             password = self._cfg.get('user_info', 'password')
             key = self._cfg.get('sep_info', 'key')
             password = simulate_JSEncrypt(password, key)
         except (configparser.NoSectionError, configparser.NoOptionError) as e:
-            self._logger.warning(
-                'Can not read user info from {}, try to get it from settings.py'.format(self._user_config_path))
-            self._logger.warning(from_settings_warning_msg)
-            self._user_info = self._user_info_from_settings
+            self._logger.error(
+                'Can not read user information from {}, please enter your personal information at first.(do not store it in settings.py, it is no longer supported)'.format(
+                    self._user_config_path))
+            exit(ExitStatus.CONFIG_ERROR)
         else:
             if not username or not password:
                 # 用户名或密码信息为空
-                self._logger.warning(from_settings_warning_msg)
-                self._user_info = self._user_info_from_settings
+                self._logger.error(
+                    'User information can not be empty, check your user information in {}.'.format(
+                        self._user_config_path))
+                exit(ExitStatus.CONFIG_ERROR)
+
             else:
                 self._user_info = {
                     'username': username,
@@ -168,7 +166,6 @@ class Loginer(object):
 
 
 if __name__ == '__main__':
-    loginer = Loginer(user_info=settings.USER_INFO,
-                      urls=settings.URLS,
+    loginer = Loginer(urls=settings.URLS,
                       user_config_path='../conf/user_config.ini')
     loginer.login()
