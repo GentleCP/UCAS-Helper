@@ -35,38 +35,28 @@
     ```
 
 # 修改配置
-> Note: `settings.py`中用户账户、资源存储路径的信息即将迁移到`conf/user_config.ini`中
+- 配置方式1：运行`python ucashelper config`(仅支持`linux,mac`平台，不支持`windows`)来启动配置引导程序，这会引导你设置用户信息和资源存储路径
+- 配置方式2：当你无法通过上述命令进行配置时，你也可以手动更改`conf/user_config.ini`，补充用户信息和资源存储路径信息
 
-- 运行`python ucashelper config`(仅支持`unix,linux`平台，不支持`windows`)来启动配置引导程序，这会引导你设置用户信息和资源存储路径
-> 当你无法通过上述命令进行配置时，你也可以手动更改`conf/user_config.ini`，我不建议你将这两个配置内容存储到`settings.py`中，后期会彻底将这部分内容转移
-
-- 根据需求修改配置文件:`settings.py`,`accounts.json`
-    - 获取课程资源（**如果在`user_config.ini`中已经配置个人信息和存储资源信息，此处忽略**）
-        - 进入[settings.py](settings.py)，找到`USER_INFO`修改你自己的用户名和密码
-        - 修改`SOURCE_DIR`，这个目录是所有课程资源存放的目录，根据你的个人需求修改  
-          
-            > 例如`D:/UCAS-sources`
-        > 在校园网内无需登录wifi，直接可登录课程网站
-    - 登录wifi  
-        - wifi登录需修改根目录下的`accounts.json`，添加到useful_accounts中，格式如下：
-            ```text
-              {
-                  "useful_accounts": [
-                    {
-                       "stuid":"xxx",
-                       "pwd":"xxx"
-                    },
-                    {
-                        "stuid":"xxx",
-                        "pwd":"xxx"
-                    }
-                   
-                  ],
-                  "useless_accounts": [],
-                  "current_month": 12
-                }
-            ```
-            每个账号一个，允许存储多个账号，当遇到一个账号流量不够的时候自动切换到下一个账号登录
+- 登录wifi*（可选）：如果你需要自动校园wifi登录（包括多个账户自动切换），需要配置`accounts.json`
+    ```text
+      {
+          "useful_accounts": [
+            {
+               "stuid":"xxx",
+               "pwd":"xxx"
+            },
+            {
+                "stuid":"xxx",
+                "pwd":"xxx"
+            }
+           
+          ],
+          "useless_accounts": [],
+          "current_month": 12
+        }
+    ```
+    > 每个账号一个，允许存储多个账号，当遇到一个账号流量不够的时候自动切换到下一个账号登录
     
 
 # 运行项目
@@ -87,14 +77,6 @@ python ucashelper.py assess # 自动评教，评教内容在settings.py中设置
 ```
 
 # 更新项目
-- ~~现已支持程序启动时自动进行更新检查，在有更新的时候自动更新，不需要用户手动进行更新操作，如果你不希望每次都进行更新检查~~ （自动更新这一块有点问题，暂不推荐）
-    > 注意：由于自动更新依赖git，所以如果是通过`release`版本下载的代码无法使用自动更新功能，因此，本次也是最后一次发布`release`版本，后续更新都将采用此更新方式，如果你只想临时使用，不期待后续更新，可选择下载最新代码。
-
-
-由于课程站点的变更，可能导致部分功能失效无法使用，待作者修复后，需要更新最新的版本代码到本地，现在提供自动化一条命令更新项目的方式。
-
-> 需通过git方式部署，若直接下载源代码或`realease`压缩包，则需上github下载最新版本代码
-
 在`UCAS-Helper`项目根目录下执行以下命令
 ```
 git stash && git fetch --all && git merge && git stash pop

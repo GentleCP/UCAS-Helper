@@ -1,4 +1,4 @@
-# UCAS Helper
+# UCAS Helper(一个让UCASer愉悦的小助手)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FGentleCP%2FUCAS-Helper&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 ![python version](https://img.shields.io/badge/python-3.5%2B-blue)
 ![demo version](https://img.shields.io/github/v/tag/GentleCP/UCAS-Helper?color=red)
@@ -32,10 +32,7 @@
    * [6. 问题反馈](#6-问题反馈)
 
 # 前言
-
 原本只是一时兴起，为了方便写的UCAS课程网站小助手，帮助我自己进行课程资源快速同步。没想到后面随着功能的增加，项目也变得小有规模起来，因此将其开放给全体UCAS同学，小助手的使用方式在下面有介绍，十分简便（需要一点对`python`环境的了解，百度`python`的安装即可），如果你觉得本项目对你有所帮助的话，希望你能帮我点个star，算是对作者的一点激励吧～ 感谢每一个为项目点上`star`，让更多人看到这个项目的人。❤️
-
-> 注意：由于课程网站的变动可能引发脚本失效，在失效后，我会尽量及时修复bug，并更新版本到github，建议star项目方便接收更新消息，或者在失效时查看本项目[github链接](https://github.com/GentleCP/UCASHelper)。
 
 # 1. 功能介绍
 - [x] 课程资源同步
@@ -52,7 +49,6 @@
 [点击这里](docs/change_log.md)查看更新日志
 
 ## 2.1 公告（important）
-
 > 当作者发现或有人提供`UCAS-Helper`的核心功能出现问题时（多半是课程网站改动导致），会在此处加以说明，并提示在哪个版本中修复了该问题，你也可以在[ChangLog](docs/change_log.md)中查看具体的信息
 
 - 【220501】：5.1假期第二天上Github突然发现有人提交了[issue](https://github.com/GentleCP/UCAS-Helper/issues/27) ，没想到这么久了这个项目还有人在活跃使用，因此假期无事正好解决一下存在的小问题，版本更新到2.4.0，现在不支持从`settings.py`中获取用户信息，请将用户信息填写到`conf/user_config.ini`中！当天测试**资源下载、分数查询**功能均可正常使用，希望后续依然有热心的同学能积极提交PR，帮助维护本项目~最后，祝大家5.1劳动节快乐（虽然真正只放了半天QAQ）
@@ -71,8 +67,7 @@
 [@GentleCP](https://github.com/GentleCP)
 
 ## 贡献者
-
-> 感谢以下同学为项目提供的PR~
+> 感谢以下同学为项目提供的PR，欢迎更多同学为项目提供贡献
 
 - [waruto210](https://github.com/waruto210)
 - [enochii](https://github.com/enochii)
