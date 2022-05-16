@@ -44,10 +44,8 @@ def UI():
 @click.command(name='down',help='Download resources from sep website')
 def download_source():
     downloader = Downloader(
-        user_config_path=settings.USER_CONFIG_PATH,
-        user_info=settings.USER_INFO,  # 未来删除
         urls=settings.URLS,
-        resource_path=settings.SOURCE_DIR,  # 未来删除
+        user_config_path=settings.USER_CONFIG_PATH,
         filter_list=settings.FILTER_LIST)
     downloader.run()
 
@@ -55,9 +53,8 @@ def download_source():
 @click.command(name='assess',help='Auto assess courses and teachers')
 def auto_assess():
     assesser = Assesser(
-        user_config_path=settings.USER_CONFIG_PATH,
-        user_info=settings.USER_INFO,  # 未来删除
         urls=settings.URLS,
+        user_config_path=settings.USER_CONFIG_PATH,
         assess_msgs=settings.ASSESS_MSG)
     assesser.run()
 
@@ -65,9 +62,8 @@ def auto_assess():
 @click.command(name='grade',help='Query your grades')
 def query_grades():
     gradeObserver = GradeObserver(
-        user_config_path=settings.USER_CONFIG_PATH,
-        user_info=settings.USER_INFO,  # 未来删除
-        urls=settings.URLS)
+        urls=settings.URLS,
+        user_config_path=settings.USER_CONFIG_PATH) # todo, delete
     gradeObserver.run()
 
 
